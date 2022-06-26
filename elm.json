@@ -10,7 +10,9 @@
     "OpenApi.Contact",
     "OpenApi.License",
     "OpenApi.ExternalDocumentation",
-    "OpenApi.Tag"
+    "OpenApi.Tag",
+    "OpenApi.Server",
+    "OpenApi.Server.Variable"
   ],
   "elm-version": "0.19.0 <= v < 0.20.0",
   "dependencies": {
