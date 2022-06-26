@@ -1,7 +1,9 @@
 module OpenApi exposing
     ( OpenApi
     , decode
+    , externalDocs
     , info
+    , jsonSchemaDialect
     , version
     )
 
@@ -20,12 +22,16 @@ module OpenApi exposing
 
 ## Querying
 
+@docs externalDocs
 @docs info
+@docs jsonSchemaDialect
 @docs version
 
 -}
 
 import Json.Decode exposing (Decoder)
+import Json.Decode.Extra
+import OpenApi.ExternalDocumentation exposing (ExternalDocumentation)
 import OpenApi.Info exposing (Info)
 import Semver exposing (Version)
 
@@ -38,6 +44,8 @@ type OpenApi
 type alias OpenApiInternal =
     { version : Version
     , info : Info
+    , jsonSchemaDialect : Maybe String
+    , externalDocs : Maybe ExternalDocumentation
     }
 
 
@@ -49,15 +57,19 @@ type alias OpenApiInternal =
 -}
 decode : Decoder OpenApi
 decode =
-    Json.Decode.map2
-        (\version_ info_ ->
+    Json.Decode.map4
+        (\version_ info_ jsonSchemaDialect_ externalDocs_ ->
             OpenApi
                 { version = version_
                 , info = info_
+                , jsonSchemaDialect = jsonSchemaDialect_
+                , externalDocs = externalDocs_
                 }
         )
         (Json.Decode.field "openapi" decodeVersion)
         (Json.Decode.field "info" OpenApi.Info.decode)
+        (Json.Decode.Extra.optionalField "jsonSchemaDialect" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "externalDocs" OpenApi.ExternalDocumentation.decode)
 
 
 decodeVersion : Decoder Version
@@ -88,3 +100,15 @@ version (OpenApi openApi) =
 info : OpenApi -> Info
 info (OpenApi openApi) =
     openApi.info
+
+
+{-| -}
+jsonSchemaDialect : OpenApi -> Maybe String
+jsonSchemaDialect (OpenApi openApi) =
+    openApi.jsonSchemaDialect
+
+
+{-| -}
+externalDocs : OpenApi -> Maybe ExternalDocumentation
+externalDocs (OpenApi openApi) =
+    openApi.externalDocs
