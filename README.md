@@ -34,9 +34,9 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [ ] Schema Object 🚧
   - [ ] Discriminator Object
   - [ ] XML Object
-  - [ ] Security Scheme Object
-  - [ ] OAuth Flows Object
-  - [ ] OAuth Flow Object
+  - [x] Security Scheme Object
+  - [x] OAuth Flows Object
+  - [x] OAuth Flow Object
   - [ ] Security Requirement Object
   - [ ] Specification Extensions
   - [ ] Security Filtering

@@ -49,6 +49,7 @@ import OpenApi.Reference exposing (ReferenceOr)
 import OpenApi.RequestBody exposing (RequestBody)
 import OpenApi.Response exposing (Response)
 import OpenApi.Schema exposing (Schema)
+import OpenApi.SecurityScheme exposing (SecurityScheme)
 
 
 
@@ -67,7 +68,7 @@ type alias Internal =
     , examples : Dict String (ReferenceOr Example)
     , requestBodies : Dict String (ReferenceOr RequestBody)
     , headers : Dict String (ReferenceOr ())
-    , securitySchemes : Dict String (ReferenceOr ())
+    , securitySchemes : Dict String (ReferenceOr SecurityScheme)
     , links : Dict String (ReferenceOr ())
     , callbacks : Dict String (ReferenceOr ())
     , pathItems : Dict String (ReferenceOr ())
@@ -102,7 +103,7 @@ decode =
         |> decodeOptionalDict "examples" (OpenApi.Reference.decodeOr OpenApi.Example.decode)
         |> decodeOptionalDict "requestBodies" (OpenApi.Reference.decodeOr OpenApi.RequestBody.decode)
         |> decodeOptionalDict "headers" (OpenApi.Reference.decodeOr (Debug.todo ""))
-        |> decodeOptionalDict "securitySchemes" (OpenApi.Reference.decodeOr (Debug.todo ""))
+        |> decodeOptionalDict "securitySchemes" (OpenApi.Reference.decodeOr OpenApi.SecurityScheme.decode)
         |> decodeOptionalDict "links" (OpenApi.Reference.decodeOr (Debug.todo ""))
         |> decodeOptionalDict "callbacks" (OpenApi.Reference.decodeOr (Debug.todo ""))
         |> decodeOptionalDict "pathItems" (OpenApi.Reference.decodeOr (Debug.todo ""))
@@ -154,7 +155,7 @@ headers (Components contact) =
 
 
 {-| -}
-securitySchemes : Components -> Dict String (ReferenceOr ())
+securitySchemes : Components -> Dict String (ReferenceOr SecurityScheme)
 securitySchemes (Components contact) =
     contact.securitySchemes
 
