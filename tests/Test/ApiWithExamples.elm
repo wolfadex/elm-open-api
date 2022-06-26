@@ -1,4 +1,4 @@
-module Test.ApiWithExamples exposing (..)
+module Test.ApiWithExamples exposing (suite)
 
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer)

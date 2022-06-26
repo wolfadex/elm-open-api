@@ -1,4 +1,4 @@
-module Test.OpenApi.Info exposing (..)
+module Test.OpenApi.Info exposing (suite)
 
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer)
