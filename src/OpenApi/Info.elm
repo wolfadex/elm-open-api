@@ -1,4 +1,39 @@
-module OpenApi.Info exposing (..)
+module OpenApi.Info exposing
+    ( Info
+    , decode
+    , contact
+    , description
+    , license
+    , summary
+    , termsOfService
+    , title
+    , version
+    )
+
+{-| Corresponds to the [Info Object](https://spec.openapis.org/oas/latest.html#info-object) in the OpenAPI specification.
+
+
+## Types
+
+@docs Info
+
+
+## Decoding
+
+@docs decode
+
+
+## Querying
+
+@docs contact
+@docs description
+@docs license
+@docs summary
+@docs termsOfService
+@docs title
+@docs version
+
+-}
 
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
@@ -6,6 +41,11 @@ import OpenApi.Contact exposing (Contact)
 import OpenApi.License exposing (License)
 
 
+
+-- Types
+
+
+{-| -}
 type Info
     = Info InfoInternal
 
@@ -21,6 +61,11 @@ type alias InfoInternal =
     }
 
 
+
+-- Decoding
+
+
+{-| -}
 decode : Decoder Info
 decode =
     Json.Decode.map7
@@ -44,36 +89,47 @@ decode =
         (Json.Decode.field "version" Json.Decode.string)
 
 
+
+-- Querying
+
+
+{-| -}
 title : Info -> String
 title (Info info) =
     info.title
 
 
+{-| -}
 summary : Info -> Maybe String
 summary (Info info) =
     info.summary
 
 
+{-| -}
 description : Info -> Maybe String
 description (Info info) =
     info.description
 
 
+{-| -}
 termsOfService : Info -> Maybe String
 termsOfService (Info info) =
     info.termsOfService
 
 
+{-| -}
 contact : Info -> Maybe Contact
 contact (Info info) =
     info.contact
 
 
+{-| -}
 license : Info -> Maybe License
 license (Info info) =
     info.license
 
 
+{-| -}
 version : Info -> String
 version (Info info) =
     info.version

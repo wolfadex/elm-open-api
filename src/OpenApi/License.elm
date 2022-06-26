@@ -128,7 +128,8 @@ andThen2 f decoderA decoderB =
         |> Json.Decode.andThen (\( a, b ) -> f a b)
 
 
-andThen3 : (a -> b -> c -> Decoder d) -> Decoder a -> Decoder b -> Decoder c -> Decoder d
-andThen3 f decoderA decoderB decoderC =
-    Json.Decode.map3 (\a b c -> ( a, b, c )) decoderA decoderB decoderC
-        |> Json.Decode.andThen (\( a, b, c ) -> f a b c)
+
+-- andThen3 : (a -> b -> c -> Decoder d) -> Decoder a -> Decoder b -> Decoder c -> Decoder d
+-- andThen3 f decoderA decoderB decoderC =
+--     Json.Decode.map3 (\a b c -> ( a, b, c )) decoderA decoderB decoderC
+--         |> Json.Decode.andThen (\( a, b, c ) -> f a b c)
