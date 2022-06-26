@@ -1,4 +1,4 @@
-# `replaceme` [![Build Status](https://github.com/replaceme/replaceme/workflows/CI/badge.svg)](https://github.com/replaceme/replaceme/actions?query=branch%3Amain)
+# `elm-open-api` [![Build Status](https://github.com/wolfadex/elm-open-api/workflows/CI/badge.svg)](https://github.com/wolfadex/elm-open-api/actions?query=branch%3Amain)
 
 ## What this repo includes
 

@@ -1,7 +1,4 @@
 {
   "root": "../src",
-  "tests": [
-    "REPLACEME",
-    "./README.md"
-  ]
+  "tests": ["OpenApi", "./README.md"]
 }
