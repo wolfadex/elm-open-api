@@ -1,6 +1,6 @@
 # `elm-open-api` [![Build Status](https://github.com/wolfadex/elm-open-api/workflows/CI/badge.svg)](https://github.com/wolfadex/elm-open-api/actions?query=branch%3Amain)
 
-Elm package for decoding and querying the [OpenAPI specification](https://www.openapis.org/).
+Elm package for decoding and querying an [OpenAPI specification](https://www.openapis.org/).
 
 ## Currently Supported Features
 

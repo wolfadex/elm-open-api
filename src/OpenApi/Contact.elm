@@ -37,10 +37,10 @@ import Json.Decode.Extra
 
 {-| -}
 type Contact
-    = Contact ContactInternal
+    = Contact Internal
 
 
-type alias ContactInternal =
+type alias Internal =
     { name : Maybe String
     , url : Maybe String
     , email : Maybe String

@@ -44,10 +44,10 @@ import Semver exposing (Version)
 
 {-| -}
 type OpenApi
-    = OpenApi OpenApiInternal
+    = OpenApi Internal
 
 
-type alias OpenApiInternal =
+type alias Internal =
     { version : Version
     , info : Info
     , jsonSchemaDialect : Maybe String

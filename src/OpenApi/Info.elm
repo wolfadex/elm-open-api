@@ -47,10 +47,10 @@ import OpenApi.License exposing (License)
 
 {-| -}
 type Info
-    = Info InfoInternal
+    = Info Internal
 
 
-type alias InfoInternal =
+type alias Internal =
     { title : String
     , summary : Maybe String
     , description : Maybe String

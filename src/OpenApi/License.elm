@@ -37,10 +37,10 @@ import Json.Decode.Extra
 
 {-| -}
 type License
-    = License LicenseInternal
+    = License Internal
 
 
-type alias LicenseInternal =
+type alias Internal =
     { name : String
     , identifierOrUrl : Maybe IdentifierOrUrl
     }
