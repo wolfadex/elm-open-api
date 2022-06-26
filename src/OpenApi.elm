@@ -1,11 +1,27 @@
 module OpenApi exposing
-    ( decode
-    , OpenApi, info, version
+    ( OpenApi
+    , decode
+    , info
+    , version
     )
 
 {-| OpenAPI
 
+
+## Types
+
+@docs OpenApi
+
+
+## Decoding
+
 @docs decode
+
+
+## Querying
+
+@docs info
+@docs version
 
 -}
 
@@ -62,11 +78,13 @@ decodeVersion =
 -- Querying
 
 
+{-| -}
 version : OpenApi -> Version
 version (OpenApi openApi) =
     openApi.version
 
 
+{-| -}
 info : OpenApi -> Info
 info (OpenApi openApi) =
     openApi.info

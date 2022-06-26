@@ -1,9 +1,41 @@
-module OpenApi.Contact exposing (..)
+module OpenApi.Contact exposing
+    ( Contact
+    , decode
+    , email
+    , name
+    , url
+    )
+
+{-| Corresponds to the [Contact Object](https://spec.openapis.org/oas/latest.html#contact-object) in the OpenAPI specification.
+
+
+## Types
+
+@docs Contact
+
+
+## Decoding
+
+@docs decode
+
+
+## Querying
+
+@docs email
+@docs name
+@docs url
+
+-}
 
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
 
 
+
+-- Types
+
+
+{-| -}
 type Contact
     = Contact ContactInternal
 
@@ -15,6 +47,11 @@ type alias ContactInternal =
     }
 
 
+
+-- Decoding
+
+
+{-| -}
 decode : Decoder Contact
 decode =
     Json.Decode.map3
@@ -30,16 +67,23 @@ decode =
         (Json.Decode.Extra.optionalField "email" Json.Decode.string)
 
 
+
+-- Querying
+
+
+{-| -}
 name : Contact -> Maybe String
 name (Contact contact) =
     contact.name
 
 
+{-| -}
 url : Contact -> Maybe String
 url (Contact contact) =
     contact.url
 
 
+{-| -}
 email : Contact -> Maybe String
 email (Contact contact) =
     contact.email
