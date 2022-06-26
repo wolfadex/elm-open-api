@@ -18,7 +18,7 @@ Elm package for decoding and querying the [OpenAPI specification](https://www.op
   - [ ] Paths Object
   - [ ] Path Item Object
   - [ ] Operation Object
-  - [ ] External Documentation Object
+  - [x] External Documentation Object
   - [ ] Parameter Object
   - [ ] Request Body Object
   - [ ] Media Type Object
@@ -29,7 +29,7 @@ Elm package for decoding and querying the [OpenAPI specification](https://www.op
   - [ ] Example Object
   - [ ] Link Object
   - [ ] Header Object
-  - [ ] Tag Object
+  - [x] Tag Object
   - [ ] Reference Object
   - [ ] Schema Object
   - [ ] Discriminator Object
