@@ -1,6 +1,6 @@
 module OpenApi exposing
     ( decode
-    , Info, OpenApi, info, version
+    , OpenApi, info, version
     )
 
 {-| OpenAPI
@@ -9,8 +9,8 @@ module OpenApi exposing
 
 -}
 
-import Html exposing (summary)
 import Json.Decode exposing (Decoder)
+import OpenApi.Info exposing (Info)
 import Semver exposing (Version)
 
 
@@ -22,21 +22,6 @@ type OpenApi
 type alias OpenApiInternal =
     { version : Version
     , info : Info
-    }
-
-
-type Info
-    = Info InfoInternal
-
-
-type alias InfoInternal =
-    { title : String
-    , summary : Maybe String
-    , description : Maybe String
-    , termsOfService : Maybe String
-    , contact : Maybe String
-    , license : Maybe String
-    , version : String
     }
 
 
@@ -56,7 +41,7 @@ decode =
                 }
         )
         (Json.Decode.field "openapi" decodeVersion)
-        (Json.Decode.field "info" decodeInfo)
+        (Json.Decode.field "info" OpenApi.Info.decode)
 
 
 decodeVersion : Decoder Version
@@ -71,29 +56,6 @@ decodeVersion =
                     Just version_ ->
                         Json.Decode.succeed version_
             )
-
-
-decodeInfo : Decoder Info
-decodeInfo =
-    Json.Decode.map7
-        (\title_ summary_ description_ termsOfService_ contact_ license_ version_ ->
-            Info
-                { title = title_
-                , summary = summary_
-                , description = description_
-                , termsOfService = termsOfService_
-                , contact = contact_
-                , license = license_
-                , version = version_
-                }
-        )
-        (Json.Decode.field "title" Json.Decode.string)
-        (Json.Decode.maybe (Json.Decode.field "summary" Json.Decode.string))
-        (Json.Decode.maybe (Json.Decode.field "description" Json.Decode.string))
-        (Json.Decode.maybe (Json.Decode.field "termsOfService" Json.Decode.string))
-        (Json.Decode.maybe (Json.Decode.field "contact" Json.Decode.string))
-        (Json.Decode.maybe (Json.Decode.field "license" Json.Decode.string))
-        (Json.Decode.field "version" Json.Decode.string)
 
 
 
