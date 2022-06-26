@@ -10,8 +10,8 @@ import Test exposing (..)
 
 suite : Test
 suite =
-    describe "Decodes any OpenAPI json string"
-        [ test "Decodes the version" <|
+    describe "Decodes the info object"
+        [ test "Decodes the title" <|
             \() ->
                 Json.Decode.decodeString OpenApi.decode """
 {
@@ -23,13 +23,21 @@ suite =
 }"""
                     |> Result.map (OpenApi.info >> OpenApi.Info.title)
                     |> Expect.equal (Ok "Valid OpenAPI")
+        , test "Failes if the title is missing" <|
+            \() ->
+                Json.Decode.decodeString OpenApi.decode """
+{
+    "info": {
+        "version": "1.0.0"
+    }
+}"""
+                    |> Expect.err
         , test "Failes if the version is missing" <|
             \() ->
                 Json.Decode.decodeString OpenApi.decode """
 {
     "info": {
-        "title": "Valid OpenAPI",
-        "version": "1.0.0"
+        "title": "Valid OpenAPI"
     }
 }"""
                     |> Expect.err
