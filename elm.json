@@ -12,6 +12,8 @@
     "OpenApi.ExternalDocumentation",
     "OpenApi.Tag",
     "OpenApi.Server",
+    "OpenApi.MediaType",
+    "OpenApi.Encoding",
     "OpenApi.Example",
     "OpenApi.Server.Variable"
   ],
