@@ -4,7 +4,7 @@
   "summary": "Elm support for OpenAPI",
   "license": "BSD-3-Clause",
   "version": "1.0.0",
-  "exposed-modules": ["OpenApi", "OpenApi.Contact"],
+  "exposed-modules": ["OpenApi", "OpenApi.Contact", "OpenApi.License"],
   "elm-version": "0.19.0 <= v < 0.20.0",
   "dependencies": {
     "dividat/elm-semver": "2.0.0 <= v < 3.0.0",

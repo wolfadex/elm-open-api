@@ -1,9 +1,41 @@
-module OpenApi.License exposing (..)
+module OpenApi.License exposing
+    ( License
+    , decode
+    , identifier
+    , name
+    , url
+    )
+
+{-| Corresponds to the [License Object](https://spec.openapis.org/oas/latest.html#license-object) in the OpenAPI specification.
+
+
+## Types
+
+@docs License
+
+
+## Decoding
+
+@docs decode
+
+
+## Querying
+
+@docs identifier
+@docs name
+@docs url
+
+-}
 
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
 
 
+
+-- Types
+
+
+{-| -}
 type License
     = License LicenseInternal
 
@@ -19,6 +51,11 @@ type IdentifierOrUrl
     | JustUrl String
 
 
+
+-- Decoding
+
+
+{-| -}
 decode : Decoder License
 decode =
     Json.Decode.map2
@@ -49,11 +86,17 @@ decode =
         )
 
 
+
+-- Querying
+
+
+{-| -}
 name : License -> String
 name (License license) =
     license.name
 
 
+{-| -}
 identifier : License -> Maybe String
 identifier (License license) =
     case license.identifierOrUrl of
@@ -64,6 +107,7 @@ identifier (License license) =
             Nothing
 
 
+{-| -}
 url : License -> Maybe String
 url (License license) =
     case license.identifierOrUrl of
