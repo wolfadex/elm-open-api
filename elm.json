@@ -15,6 +15,7 @@
     "OpenApi.MediaType",
     "OpenApi.RequestBody",
     "OpenApi.OauthFlow",
+    "OpenApi.Link",
     "OpenApi.SecurityScheme",
     "OpenApi.Encoding",
     "OpenApi.Example",

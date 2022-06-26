@@ -27,6 +27,7 @@ module OpenApi.License exposing
 
 -}
 
+import Internal
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
 
@@ -66,7 +67,7 @@ decode =
                 }
         )
         (Json.Decode.field "name" Json.Decode.string)
-        (andThen2
+        (Internal.andThen2
             (\identifier_ url_ ->
                 case ( identifier_, url_ ) of
                     ( Nothing, Nothing ) ->
@@ -116,20 +117,3 @@ url (License license) =
 
         _ ->
             Nothing
-
-
-
--- Helpers
-
-
-andThen2 : (a -> b -> Decoder c) -> Decoder a -> Decoder b -> Decoder c
-andThen2 f decoderA decoderB =
-    Json.Decode.map2 Tuple.pair decoderA decoderB
-        |> Json.Decode.andThen (\( a, b ) -> f a b)
-
-
-
--- andThen3 : (a -> b -> c -> Decoder d) -> Decoder a -> Decoder b -> Decoder c -> Decoder d
--- andThen3 f decoderA decoderB decoderC =
---     Json.Decode.map3 (\a b c -> ( a, b, c )) decoderA decoderB decoderC
---         |> Json.Decode.andThen (\( a, b, c ) -> f a b c)

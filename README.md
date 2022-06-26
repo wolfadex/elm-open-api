@@ -27,7 +27,7 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [ ] Response Object
   - [ ] Callback Object
   - [x] Example Object
-  - [ ] Link Object
+  - [x] Link Object
   - [ ] Header Object 🚧
   - [x] Tag Object
   - [ ] Reference Object 🚧
