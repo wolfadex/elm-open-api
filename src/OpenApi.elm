@@ -1,6 +1,7 @@
 module OpenApi exposing
     ( OpenApi
     , decode
+    , components
     , externalDocs
     , info
     , jsonSchemaDialect
@@ -9,7 +10,7 @@ module OpenApi exposing
     , version
     )
 
-{-| OpenAPI
+{-| Corresponds to the [OpenAPI Object](https://spec.openapis.org/oas/latest.html#openapi-object) in the OpenAPI specification.
 
 
 ## Types
@@ -24,6 +25,7 @@ module OpenApi exposing
 
 ## Querying
 
+@docs components
 @docs externalDocs
 @docs info
 @docs jsonSchemaDialect
@@ -35,6 +37,7 @@ module OpenApi exposing
 
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
+import OpenApi.Components exposing (Components)
 import OpenApi.ExternalDocumentation exposing (ExternalDocumentation)
 import OpenApi.Info exposing (Info)
 import OpenApi.Server exposing (Server)
@@ -54,6 +57,7 @@ type alias Internal =
     , externalDocs : Maybe ExternalDocumentation
     , tags : List Tag
     , servers : List Server
+    , components : Maybe Components
     }
 
 
@@ -65,8 +69,8 @@ type alias Internal =
 -}
 decode : Decoder OpenApi
 decode =
-    Json.Decode.map6
-        (\version_ info_ jsonSchemaDialect_ externalDocs_ tags_ servers_ ->
+    Json.Decode.map7
+        (\version_ info_ jsonSchemaDialect_ externalDocs_ tags_ servers_ components_ ->
             OpenApi
                 { version = version_
                 , info = info_
@@ -74,6 +78,7 @@ decode =
                 , externalDocs = externalDocs_
                 , tags = tags_
                 , servers = servers_
+                , components = components_
                 }
         )
         (Json.Decode.field "openapi" decodeVersion)
@@ -86,6 +91,7 @@ decode =
         (Json.Decode.Extra.optionalField "servers" (Json.Decode.list OpenApi.Server.decode)
             |> Json.Decode.map (Maybe.withDefault [])
         )
+        (Json.Decode.Extra.optionalField "components" OpenApi.Components.decode)
 
 
 decodeVersion : Decoder Version
@@ -140,3 +146,9 @@ tags (OpenApi openApi) =
 servers : OpenApi -> List Server
 servers (OpenApi openApi) =
     openApi.servers
+
+
+{-| -}
+components : OpenApi -> Maybe Components
+components (OpenApi openApi) =
+    openApi.components
