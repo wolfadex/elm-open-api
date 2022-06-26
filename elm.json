@@ -13,6 +13,7 @@
     "OpenApi.Tag",
     "OpenApi.Server",
     "OpenApi.MediaType",
+    "OpenApi.RequestBody",
     "OpenApi.Encoding",
     "OpenApi.Example",
     "OpenApi.Server.Variable"

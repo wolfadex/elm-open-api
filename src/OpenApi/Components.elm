@@ -45,7 +45,9 @@ import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
 import Json.Decode.Pipeline
 import OpenApi.Example exposing (Example)
-import OpenApi.Reference exposing (Reference, ReferenceOr)
+import OpenApi.Reference exposing (ReferenceOr)
+import OpenApi.RequestBody exposing (RequestBody)
+import OpenApi.Response exposing (Response)
 import OpenApi.Schema exposing (Schema)
 
 
@@ -60,10 +62,10 @@ type Components
 
 type alias Internal =
     { schemas : Dict String Schema
-    , responses : Dict String (ReferenceOr ())
+    , responses : Dict String (ReferenceOr Response)
     , parameters : Dict String (ReferenceOr ())
     , examples : Dict String (ReferenceOr Example)
-    , requestBodies : Dict String (ReferenceOr ())
+    , requestBodies : Dict String (ReferenceOr RequestBody)
     , headers : Dict String (ReferenceOr ())
     , securitySchemes : Dict String (ReferenceOr ())
     , links : Dict String (ReferenceOr ())
@@ -95,10 +97,10 @@ decode =
                 }
         )
         |> decodeOptionalDict "schemas" OpenApi.Schema.decode
-        |> decodeOptionalDict "responses" (OpenApi.Reference.decodeOr (Debug.todo ""))
+        |> decodeOptionalDict "responses" (OpenApi.Reference.decodeOr OpenApi.Response.decode)
         |> decodeOptionalDict "parameters" (OpenApi.Reference.decodeOr (Debug.todo ""))
         |> decodeOptionalDict "examples" (OpenApi.Reference.decodeOr OpenApi.Example.decode)
-        |> decodeOptionalDict "requestBodies" (OpenApi.Reference.decodeOr (Debug.todo ""))
+        |> decodeOptionalDict "requestBodies" (OpenApi.Reference.decodeOr OpenApi.RequestBody.decode)
         |> decodeOptionalDict "headers" (OpenApi.Reference.decodeOr (Debug.todo ""))
         |> decodeOptionalDict "securitySchemes" (OpenApi.Reference.decodeOr (Debug.todo ""))
         |> decodeOptionalDict "links" (OpenApi.Reference.decodeOr (Debug.todo ""))
@@ -122,7 +124,7 @@ schemas (Components contact) =
 
 
 {-| -}
-responses : Components -> Dict String (ReferenceOr ())
+responses : Components -> Dict String (ReferenceOr Response)
 responses (Components contact) =
     contact.responses
 
@@ -140,7 +142,7 @@ examples (Components contact) =
 
 
 {-| -}
-requestBodies : Components -> Dict String (ReferenceOr ())
+requestBodies : Components -> Dict String (ReferenceOr RequestBody)
 requestBodies (Components contact) =
     contact.requestBodies
 
