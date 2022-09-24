@@ -29,7 +29,6 @@ module OpenApi.RequestBody exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
-import Json.Decode.Extra
 import OpenApi.MediaType exposing (MediaType)
 import OpenApi.Types exposing (RequestBody(..))
 
@@ -50,21 +49,7 @@ type alias RequestBody =
 {-| -}
 decode : Decoder RequestBody
 decode =
-    Json.Decode.map3
-        (\description_ content_ required_ ->
-            RequestBody
-                { description = description_
-                , content = content_
-                , required = required_
-                }
-        )
-        (Json.Decode.Extra.optionalField "description" Json.Decode.string)
-        (Json.Decode.Extra.optionalField "content" (Json.Decode.dict OpenApi.MediaType.decode)
-            |> Json.Decode.map (Maybe.withDefault Dict.empty)
-        )
-        (Json.Decode.Extra.optionalField "required" Json.Decode.bool
-            |> Json.Decode.map (Maybe.withDefault False)
-        )
+    OpenApi.Types.decodeRequestBody
 
 
 

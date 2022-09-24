@@ -50,7 +50,7 @@ import OpenApi.RequestBody
 import OpenApi.Response exposing (Response)
 import OpenApi.Schema exposing (Schema)
 import OpenApi.SecurityScheme exposing (SecurityScheme)
-import OpenApi.Types exposing (Example, Header, Parameter, Path, ReferenceOr(..), RequestBody(..))
+import OpenApi.Types exposing (Callback, Example, Header, Parameter, Path, ReferenceOr(..), RequestBody(..))
 
 
 
@@ -71,7 +71,7 @@ type alias Internal =
     , headers : Dict String (ReferenceOr Header)
     , securitySchemes : Dict String (ReferenceOr SecurityScheme)
     , links : Dict String (ReferenceOr Link)
-    , callbacks : Dict String (ReferenceOr ())
+    , callbacks : Dict String (ReferenceOr Callback)
     , pathItems : Dict String (ReferenceOr Path)
     }
 
@@ -106,7 +106,7 @@ decode =
         |> decodeOptionalDict "headers" (OpenApi.Types.decodeRefOr OpenApi.Types.decodeHeader)
         |> decodeOptionalDict "securitySchemes" (OpenApi.Types.decodeRefOr OpenApi.SecurityScheme.decode)
         |> decodeOptionalDict "links" (OpenApi.Types.decodeRefOr OpenApi.Link.decode)
-        |> decodeOptionalDict "callbacks" (OpenApi.Types.decodeRefOr (Debug.todo ""))
+        |> decodeOptionalDict "callbacks" (OpenApi.Types.decodeRefOr OpenApi.Types.decodeCallback)
         |> decodeOptionalDict "pathItems" (OpenApi.Types.decodeRefOr OpenApi.Types.decodePath)
 
 
@@ -168,7 +168,7 @@ links (Components contact) =
 
 
 {-| -}
-callbacks : Components -> Dict String (ReferenceOr ())
+callbacks : Components -> Dict String (ReferenceOr Callback)
 callbacks (Components contact) =
     contact.callbacks
 

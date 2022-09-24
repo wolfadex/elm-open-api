@@ -26,7 +26,7 @@ module OpenApi.ExternalDocumentation exposing
 -}
 
 import Json.Decode exposing (Decoder)
-import Json.Decode.Extra
+import OpenApi.Types exposing (ExternalDocumentation(..))
 
 
 
@@ -34,14 +34,8 @@ import Json.Decode.Extra
 
 
 {-| -}
-type ExternalDocumentation
-    = ExternalDocumentation Internal
-
-
-type alias Internal =
-    { description : Maybe String
-    , url : String
-    }
+type alias ExternalDocumentation =
+    OpenApi.Types.ExternalDocumentation
 
 
 
@@ -51,15 +45,7 @@ type alias Internal =
 {-| -}
 decode : Decoder ExternalDocumentation
 decode =
-    Json.Decode.map2
-        (\description_ url_ ->
-            ExternalDocumentation
-                { description = description_
-                , url = url_
-                }
-        )
-        (Json.Decode.Extra.optionalField "description" Json.Decode.string)
-        (Json.Decode.field "url" Json.Decode.string)
+    OpenApi.Types.decodeExternalDocumentation
 
 
 

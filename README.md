@@ -14,10 +14,10 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [x] License Object
   - [x] Server Object
   - [x] Server Variable Object
-  - [ ] Components Object 🚧
+  - [x] Components Object
   - [ ] Paths Object
   - [x] Path Item Object
-  - [ ] Operation Object
+  - [x] Operation Object
   - [x] External Documentation Object
   - [x] Parameter Object
   - [x] Request Body Object
@@ -30,7 +30,7 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [x] Link Object
   - [x] Header Object
   - [x] Tag Object
-  - [ ] Reference Object 🚧
+  - [x] Reference Object
   - [ ] Schema Object 🚧
   - [ ] Discriminator Object
   - [ ] XML Object

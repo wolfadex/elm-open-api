@@ -6,6 +6,9 @@ import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
 import Json.Decode.Pipeline
 import Json.Encode exposing (Value)
+import OpenApi exposing (servers)
+import OpenApi.Components exposing (parameters, responses)
+import OpenApi.Link exposing (operationId)
 
 
 
@@ -346,6 +349,25 @@ type alias RequestBodyInternal =
     }
 
 
+decodeRequestBody : Decoder RequestBody
+decodeRequestBody =
+    Json.Decode.map3
+        (\description_ content_ required_ ->
+            RequestBody
+                { description = description_
+                , content = content_
+                , required = required_
+                }
+        )
+        (Json.Decode.Extra.optionalField "description" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "content" (Json.Decode.dict decodeMediaType)
+            |> Json.Decode.map (Maybe.withDefault Dict.empty)
+        )
+        (Json.Decode.Extra.optionalField "required" Json.Decode.bool
+            |> Json.Decode.map (Maybe.withDefault False)
+        )
+
+
 
 --MediaType
 
@@ -474,11 +496,6 @@ decodePath =
         |> Json.Decode.Pipeline.optional "parameters" (Json.Decode.list (decodeRefOr decodeParameter)) []
 
 
-optionalNothing : String -> Decoder a -> Decoder (Maybe a -> b) -> Decoder b
-optionalNothing fieldName decoder =
-    Json.Decode.Pipeline.optional fieldName (Json.Decode.map Just decoder) Nothing
-
-
 
 -- Operation
 
@@ -488,11 +505,102 @@ type Operation
 
 
 type alias OperationInternal =
-    {}
+    { tags : List String
+    , summary : Maybe String
+    , description : Maybe String
+    , externalDocs : Maybe ExternalDocumentation
+    , operationId : Maybe String
+    , parameters : List (ReferenceOr Parameter)
+    , requestBody : Maybe (ReferenceOr RequestBody)
+    , responses : Responses
+    , callbacks : Dict String (ReferenceOr Callback)
+    , deprecated : Bool
+    , security : List SecurityRequirement
+    , servers : List Server
+    }
 
 
 decodeOperation : Decoder Operation
 decodeOperation =
+    Json.Decode.succeed
+        (\tags summary description externalDocs operationId parameters requestBody responses callbacks deprecated security servers ->
+            Operation
+                { tags = tags
+                , summary = summary
+                , description = description
+                , externalDocs = externalDocs
+                , operationId = operationId
+                , parameters = parameters
+                , requestBody = requestBody
+                , responses = responses
+                , callbacks = callbacks
+                , deprecated = deprecated
+                , security = security
+                , servers = servers
+                }
+        )
+        |> Json.Decode.Pipeline.optional "tags" (Json.Decode.list Json.Decode.string) []
+        |> optionalNothing "summary" Json.Decode.string
+        |> optionalNothing "description" Json.Decode.string
+        |> optionalNothing "externalDocs" decodeExternalDocumentation
+        |> optionalNothing "operationId" Json.Decode.string
+        |> Json.Decode.Pipeline.optional "parameters" (Json.Decode.list (decodeRefOr decodeParameter)) []
+        |> optionalNothing "requestBody" (decodeRefOr decodeRequestBody)
+        |> Json.Decode.Pipeline.optional "responses" decodeResponses (Debug.todo "")
+        |> Json.Decode.Pipeline.optional "callbacks" (Json.Decode.dict (decodeRefOr decodeCallback)) Dict.empty
+        |> Json.Decode.Pipeline.optional "deprecated" Json.Decode.bool False
+        |> Json.Decode.Pipeline.optional "security" (Json.Decode.list decodeSecurityRequirement) []
+        |> Json.Decode.Pipeline.optional "servers" (Json.Decode.list decodeServer) []
+
+
+
+-- SecurityRequirement
+
+
+type SecurityRequirement
+    = SecurityRequirement SecurityRequirementInternal
+
+
+type alias SecurityRequirementInternal =
+    {}
+
+
+decodeSecurityRequirement : Decoder SecurityRequirement
+decodeSecurityRequirement =
+    Debug.todo ""
+
+
+
+-- Callback
+
+
+type Callback
+    = Callback CallbackInternal
+
+
+type alias CallbackInternal =
+    {}
+
+
+decodeCallback : Decoder Callback
+decodeCallback =
+    Debug.todo ""
+
+
+
+-- Responses
+
+
+type Responses
+    = Responses ResponsesInternal
+
+
+type alias ResponsesInternal =
+    {}
+
+
+decodeResponses : Decoder Responses
+decodeResponses =
     Debug.todo ""
 
 
@@ -558,3 +666,39 @@ decodeServerVariable =
         (Json.Decode.Extra.optionalField "enum" (Json.Decode.list Json.Decode.string)
             |> Json.Decode.map (Maybe.withDefault [])
         )
+
+
+
+-- External Documentation
+
+
+type ExternalDocumentation
+    = ExternalDocumentation ExternalDocumentationInternal
+
+
+type alias ExternalDocumentationInternal =
+    { description : Maybe String
+    , url : String
+    }
+
+
+decodeExternalDocumentation : Decoder ExternalDocumentation
+decodeExternalDocumentation =
+    Json.Decode.map2
+        (\description_ url_ ->
+            ExternalDocumentation
+                { description = description_
+                , url = url_
+                }
+        )
+        (Json.Decode.Extra.optionalField "description" Json.Decode.string)
+        (Json.Decode.field "url" Json.Decode.string)
+
+
+
+-- Helpers
+
+
+optionalNothing : String -> Decoder a -> Decoder (Maybe a -> b) -> Decoder b
+optionalNothing fieldName decoder =
+    Json.Decode.Pipeline.optional fieldName (Json.Decode.map Just decoder) Nothing

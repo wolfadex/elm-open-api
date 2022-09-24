@@ -29,7 +29,7 @@ module OpenApi.Tag exposing
 
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
-import OpenApi.ExternalDocumentation exposing (ExternalDocumentation)
+import OpenApi.Types exposing (ExternalDocumentation)
 
 
 
@@ -65,7 +65,7 @@ decode =
         )
         (Json.Decode.Extra.optionalField "description" Json.Decode.string)
         (Json.Decode.field "name" Json.Decode.string)
-        (Json.Decode.Extra.optionalField "externalDocs" OpenApi.ExternalDocumentation.decode)
+        (Json.Decode.Extra.optionalField "externalDocs" OpenApi.Types.decodeExternalDocumentation)
 
 
 
