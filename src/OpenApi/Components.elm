@@ -50,7 +50,7 @@ import OpenApi.RequestBody
 import OpenApi.Response exposing (Response)
 import OpenApi.Schema exposing (Schema)
 import OpenApi.SecurityScheme exposing (SecurityScheme)
-import OpenApi.Types exposing (Example, ReferenceOr(..), RequestBody(..))
+import OpenApi.Types exposing (Example, Header, Parameter, ReferenceOr(..), RequestBody(..))
 
 
 
@@ -65,10 +65,10 @@ type Components
 type alias Internal =
     { schemas : Dict String Schema
     , responses : Dict String (ReferenceOr Response)
-    , parameters : Dict String (ReferenceOr ())
+    , parameters : Dict String (ReferenceOr Parameter)
     , examples : Dict String (ReferenceOr Example)
     , requestBodies : Dict String (ReferenceOr RequestBody)
-    , headers : Dict String (ReferenceOr ())
+    , headers : Dict String (ReferenceOr Header)
     , securitySchemes : Dict String (ReferenceOr SecurityScheme)
     , links : Dict String (ReferenceOr Link)
     , callbacks : Dict String (ReferenceOr ())
@@ -100,10 +100,10 @@ decode =
         )
         |> decodeOptionalDict "schemas" OpenApi.Schema.decode
         |> decodeOptionalDict "responses" (OpenApi.Types.decodeOr OpenApi.Response.decode)
-        |> decodeOptionalDict "parameters" (OpenApi.Types.decodeOr (Debug.todo ""))
+        |> decodeOptionalDict "parameters" (OpenApi.Types.decodeOr OpenApi.Types.decodeParameter)
         |> decodeOptionalDict "examples" (OpenApi.Types.decodeOr OpenApi.Example.decode)
         |> decodeOptionalDict "requestBodies" (OpenApi.Types.decodeOr OpenApi.RequestBody.decode)
-        |> decodeOptionalDict "headers" (OpenApi.Types.decodeOr (Debug.todo ""))
+        |> decodeOptionalDict "headers" (OpenApi.Types.decodeOr OpenApi.Types.decodeHeader)
         |> decodeOptionalDict "securitySchemes" (OpenApi.Types.decodeOr OpenApi.SecurityScheme.decode)
         |> decodeOptionalDict "links" (OpenApi.Types.decodeOr OpenApi.Link.decode)
         |> decodeOptionalDict "callbacks" (OpenApi.Types.decodeOr (Debug.todo ""))
@@ -132,7 +132,7 @@ responses (Components contact) =
 
 
 {-| -}
-parameters : Components -> Dict String (ReferenceOr ())
+parameters : Components -> Dict String (ReferenceOr Parameter)
 parameters (Components contact) =
     contact.parameters
 
@@ -150,7 +150,7 @@ requestBodies (Components contact) =
 
 
 {-| -}
-headers : Components -> Dict String (ReferenceOr ())
+headers : Components -> Dict String (ReferenceOr Header)
 headers (Components contact) =
     contact.headers
 
