@@ -6,9 +6,6 @@ import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
 import Json.Decode.Pipeline
 import Json.Encode exposing (Value)
-import OpenApi exposing (servers)
-import OpenApi.Components exposing (parameters, responses)
-import OpenApi.Link exposing (operationId)
 
 
 
@@ -42,7 +39,7 @@ decodeEncoding =
         )
         (Json.Decode.Extra.optionalField "contentType" Json.Decode.string)
         (Json.Decode.Extra.optionalField "headers"
-            (Json.Decode.dict (decodeRefOr decodeHeader))
+            (Json.Decode.dict (decodeRefOr (Json.Decode.lazy (\() -> decodeHeader))))
             |> Json.Decode.map (Maybe.withDefault Dict.empty)
         )
         (Json.Decode.Extra.optionalField "style" Json.Decode.string)
@@ -512,7 +509,7 @@ type alias OperationInternal =
     , operationId : Maybe String
     , parameters : List (ReferenceOr Parameter)
     , requestBody : Maybe (ReferenceOr RequestBody)
-    , responses : Responses
+    , responses : Dict String (ReferenceOr Response)
     , callbacks : Dict String (ReferenceOr Callback)
     , deprecated : Bool
     , security : List SecurityRequirement
@@ -546,7 +543,7 @@ decodeOperation =
         |> optionalNothing "operationId" Json.Decode.string
         |> Json.Decode.Pipeline.optional "parameters" (Json.Decode.list (decodeRefOr decodeParameter)) []
         |> optionalNothing "requestBody" (decodeRefOr decodeRequestBody)
-        |> Json.Decode.Pipeline.optional "responses" decodeResponses (Debug.todo "")
+        |> decodeOptionalDict "responses" (decodeRefOr decodeResponse)
         |> Json.Decode.Pipeline.optional "callbacks" (Json.Decode.dict (decodeRefOr decodeCallback)) Dict.empty
         |> Json.Decode.Pipeline.optional "deprecated" Json.Decode.bool False
         |> Json.Decode.Pipeline.optional "security" (Json.Decode.list decodeSecurityRequirement) []
@@ -588,20 +585,114 @@ decodeCallback =
 
 
 
--- Responses
+-- Response
 
 
-type Responses
-    = Responses ResponsesInternal
+type Response
+    = Response ResponseInternal
 
 
-type alias ResponsesInternal =
-    {}
+type alias ResponseInternal =
+    { description : String
+    , headers : Dict String (ReferenceOr Header)
+    , content : Dict String MediaType
+    , links : Dict String (ReferenceOr Link)
+    }
 
 
-decodeResponses : Decoder Responses
-decodeResponses =
-    Debug.todo ""
+decodeResponse : Decoder Response
+decodeResponse =
+    Json.Decode.map4
+        (\description_ headers_ content_ links_ ->
+            Response
+                { description = description_
+                , headers = headers_
+                , content = content_
+                , links = links_
+                }
+        )
+        (Json.Decode.field "description" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "headers"
+            (Json.Decode.dict (decodeRefOr decodeHeader))
+            |> Json.Decode.map (Maybe.withDefault Dict.empty)
+        )
+        (Json.Decode.Extra.optionalField "content"
+            (Json.Decode.dict decodeMediaType)
+            |> Json.Decode.map (Maybe.withDefault Dict.empty)
+        )
+        (Json.Decode.Extra.optionalField "links"
+            (Json.Decode.dict (decodeRefOr decodeLink))
+            |> Json.Decode.map (Maybe.withDefault Dict.empty)
+        )
+
+
+
+-- Link
+
+
+type Link
+    = Link LinkInternal
+
+
+type alias LinkInternal =
+    { operationRefOrId : Maybe LinkRefOrId
+    , parameters : Dict String Value
+    , requestBody : Maybe Value
+    , description : Maybe String
+    , server : Maybe Server
+    }
+
+
+type LinkRefOrId
+    = LinkRef String
+    | LinkId String
+
+
+
+-- Decoding
+
+
+{-| -}
+decodeLink : Decoder Link
+decodeLink =
+    Json.Decode.map5
+        (\operationRefOrId_ parameters_ requestBody_ description_ server_ ->
+            Link
+                { operationRefOrId = operationRefOrId_
+                , parameters = parameters_
+                , requestBody = requestBody_
+                , description = description_
+                , server = server_
+                }
+        )
+        decodeLinkRefOrId
+        (Json.Decode.Extra.optionalField "parameters" (Json.Decode.dict Json.Decode.value)
+            |> Json.Decode.map (Maybe.withDefault Dict.empty)
+        )
+        (Json.Decode.Extra.optionalField "requestBody" Json.Decode.value)
+        (Json.Decode.Extra.optionalField "description" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "server" decodeServer)
+
+
+decodeLinkRefOrId : Decoder (Maybe LinkRefOrId)
+decodeLinkRefOrId =
+    Internal.andThen2
+        (\operationRef_ operationId_ ->
+            case ( operationRef_, operationId_ ) of
+                ( Nothing, Nothing ) ->
+                    Json.Decode.succeed Nothing
+
+                ( Just ref, Nothing ) ->
+                    Json.Decode.succeed (Just (LinkRef ref))
+
+                ( Nothing, Just id ) ->
+                    Json.Decode.succeed (Just (LinkId id))
+
+                ( Just _, Just _ ) ->
+                    Json.Decode.fail "A Link Object cannot have both an operationRef and an operationId, but I found both."
+        )
+        (Json.Decode.Extra.optionalField "operationRef" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "operationId" Json.Decode.string)
 
 
 
@@ -702,3 +793,8 @@ decodeExternalDocumentation =
 optionalNothing : String -> Decoder a -> Decoder (Maybe a -> b) -> Decoder b
 optionalNothing fieldName decoder =
     Json.Decode.Pipeline.optional fieldName (Json.Decode.map Just decoder) Nothing
+
+
+decodeOptionalDict : String -> Decoder a -> Decoder (Dict String a -> b) -> Decoder b
+decodeOptionalDict field decoder =
+    Json.Decode.Pipeline.optional field (Json.Decode.dict decoder) Dict.empty

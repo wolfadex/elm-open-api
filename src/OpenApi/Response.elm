@@ -9,48 +9,18 @@ module OpenApi.Response exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
-import Json.Decode.Extra
 import OpenApi.Link exposing (Link)
 import OpenApi.MediaType exposing (MediaType)
-import OpenApi.Types exposing (Header, ReferenceOr(..))
+import OpenApi.Types exposing (Header, ReferenceOr(..), Response(..))
 
 
-type Response
-    = Response Internal
-
-
-type alias Internal =
-    { description : String
-    , headers : Dict String (ReferenceOr Header)
-    , content : Dict String MediaType
-    , links : Dict String (ReferenceOr Link)
-    }
+type alias Response =
+    OpenApi.Types.Response
 
 
 decode : Decoder Response
 decode =
-    Json.Decode.map4
-        (\description_ headers_ content_ links_ ->
-            Response
-                { description = description_
-                , headers = headers_
-                , content = content_
-                , links = links_
-                }
-        )
-        (Json.Decode.field "description" Json.Decode.string)
-        (Json.Decode.Extra.optionalField "headers"
-            (Json.Decode.dict (OpenApi.Types.decodeRefOr OpenApi.Types.decodeHeader))
-            |> Json.Decode.map (Maybe.withDefault Dict.empty)
-        )
-        (Json.Decode.Extra.optionalField "content"
-            (Json.Decode.dict OpenApi.MediaType.decode)
-            |> Json.Decode.map (Maybe.withDefault Dict.empty)
-        )
-        (Json.Decode.Extra.optionalField "links"
-            (Json.Decode.dict (OpenApi.Types.decodeRefOr OpenApi.Link.decode))
-            |> Json.Decode.map (Maybe.withDefault Dict.empty)
-        )
+    OpenApi.Types.decodeResponse
 
 
 description : Response -> String
