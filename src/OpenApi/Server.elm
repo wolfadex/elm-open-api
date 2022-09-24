@@ -29,8 +29,8 @@ module OpenApi.Server exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
-import Json.Decode.Extra
 import OpenApi.Server.Variable exposing (Variable)
+import OpenApi.Types exposing (Server(..))
 
 
 
@@ -38,15 +38,8 @@ import OpenApi.Server.Variable exposing (Variable)
 
 
 {-| -}
-type Server
-    = Server Internal
-
-
-type alias Internal =
-    { description : Maybe String
-    , url : String
-    , variables : Dict String Variable
-    }
+type alias Server =
+    OpenApi.Types.Server
 
 
 
@@ -56,19 +49,7 @@ type alias Internal =
 {-| -}
 decode : Decoder Server
 decode =
-    Json.Decode.map3
-        (\description_ url_ variables_ ->
-            Server
-                { description = description_
-                , url = url_
-                , variables = variables_
-                }
-        )
-        (Json.Decode.Extra.optionalField "description" Json.Decode.string)
-        (Json.Decode.field "url" Json.Decode.string)
-        (Json.Decode.Extra.optionalField "variables" (Json.Decode.dict OpenApi.Server.Variable.decode)
-            |> Json.Decode.map (Maybe.withDefault Dict.empty)
-        )
+    OpenApi.Types.decodeServer
 
 
 

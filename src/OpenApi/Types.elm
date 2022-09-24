@@ -6,7 +6,6 @@ import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
 import Json.Decode.Pipeline
 import Json.Encode exposing (Value)
-import OpenApi.Encoding exposing (explode)
 
 
 
@@ -171,7 +170,7 @@ decodeLocation =
                         decodeLocHeader
 
                     "path" ->
-                        decodePath
+                        decodeLocPath
 
                     "cookie" ->
                         decodeCookie
@@ -215,8 +214,8 @@ decodeLocHeader =
         (Json.Decode.maybe (Json.Decode.field "required" Json.Decode.bool))
 
 
-decodePath : Decoder ( Location, Bool )
-decodePath =
+decodeLocPath : Decoder ( Location, Bool )
+decodeLocPath =
     Internal.andThen3
         (\style explode required ->
             if required then
@@ -416,3 +415,146 @@ decodeExample =
         (Json.Decode.Extra.optionalField "description" Json.Decode.string)
         (Json.Decode.Extra.optionalField "value" Json.Decode.value)
         (Json.Decode.Extra.optionalField "externalValue" Json.Decode.string)
+
+
+
+-- Path
+
+
+type Path
+    = Path PathInternal
+
+
+type alias PathInternal =
+    { summary : Maybe String
+    , description : Maybe String
+    , get : Maybe Operation
+    , put : Maybe Operation
+    , post : Maybe Operation
+    , delete : Maybe Operation
+    , options : Maybe Operation
+    , head : Maybe Operation
+    , patch : Maybe Operation
+    , trace : Maybe Operation
+    , servers : List Server
+    , parameters : List (ReferenceOr Parameter)
+    }
+
+
+decodePath : Decoder Path
+decodePath =
+    Json.Decode.succeed
+        (\summary description get put post delete options head patch trace servers parameters ->
+            Path
+                { summary = summary
+                , description = description
+                , get = get
+                , put = put
+                , post = post
+                , delete = delete
+                , options = options
+                , head = head
+                , patch = patch
+                , trace = trace
+                , servers = servers
+                , parameters = parameters
+                }
+        )
+        |> optionalNothing "summary" Json.Decode.string
+        |> optionalNothing "description" Json.Decode.string
+        |> optionalNothing "get" decodeOperation
+        |> optionalNothing "put" decodeOperation
+        |> optionalNothing "post" decodeOperation
+        |> optionalNothing "delete" decodeOperation
+        |> optionalNothing "options" decodeOperation
+        |> optionalNothing "head" decodeOperation
+        |> optionalNothing "patch" decodeOperation
+        |> optionalNothing "trace" decodeOperation
+        |> Json.Decode.Pipeline.optional "servers" (Json.Decode.list decodeServer) []
+        |> Json.Decode.Pipeline.optional "parameters" (Json.Decode.list (decodeRefOr decodeParameter)) []
+
+
+optionalNothing : String -> Decoder a -> Decoder (Maybe a -> b) -> Decoder b
+optionalNothing fieldName decoder =
+    Json.Decode.Pipeline.optional fieldName (Json.Decode.map Just decoder) Nothing
+
+
+
+-- Operation
+
+
+type Operation
+    = Operation OperationInternal
+
+
+type alias OperationInternal =
+    {}
+
+
+decodeOperation : Decoder Operation
+decodeOperation =
+    Debug.todo ""
+
+
+
+-- Server
+
+
+type Server
+    = Server ServerInternal
+
+
+type alias ServerInternal =
+    { description : Maybe String
+    , url : String
+    , variables : Dict String Variable
+    }
+
+
+decodeServer : Decoder Server
+decodeServer =
+    Json.Decode.map3
+        (\description_ url_ variables_ ->
+            Server
+                { description = description_
+                , url = url_
+                , variables = variables_
+                }
+        )
+        (Json.Decode.Extra.optionalField "description" Json.Decode.string)
+        (Json.Decode.field "url" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "variables" (Json.Decode.dict decodeServerVariable)
+            |> Json.Decode.map (Maybe.withDefault Dict.empty)
+        )
+
+
+
+-- Server Variable
+
+
+type Variable
+    = Variable VariableInternal
+
+
+type alias VariableInternal =
+    { enum : List String
+    , default : String
+    , description : Maybe String
+    }
+
+
+decodeServerVariable : Decoder Variable
+decodeServerVariable =
+    Json.Decode.map3
+        (\description_ default_ enum_ ->
+            Variable
+                { description = description_
+                , default = default_
+                , enum = enum_
+                }
+        )
+        (Json.Decode.Extra.optionalField "description" Json.Decode.string)
+        (Json.Decode.field "default" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "enum" (Json.Decode.list Json.Decode.string)
+            |> Json.Decode.map (Maybe.withDefault [])
+        )
