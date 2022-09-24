@@ -11,6 +11,7 @@ import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
 import OpenApi.Header exposing (Header)
+import OpenApi.Link exposing (Link)
 import OpenApi.MediaType exposing (MediaType)
 import OpenApi.Reference exposing (ReferenceOr(..))
 
@@ -23,7 +24,7 @@ type alias Internal =
     { description : String
     , headers : Dict String (ReferenceOr Header)
     , content : Dict String MediaType
-    , links : Dict String (ReferenceOr ())
+    , links : Dict String (ReferenceOr Link)
     }
 
 
@@ -48,7 +49,7 @@ decode =
             |> Json.Decode.map (Maybe.withDefault Dict.empty)
         )
         (Json.Decode.Extra.optionalField "links"
-            (Json.Decode.dict (OpenApi.Reference.decodeOr (Debug.todo "")))
+            (Json.Decode.dict (OpenApi.Reference.decodeOr OpenApi.Link.decode))
             |> Json.Decode.map (Maybe.withDefault Dict.empty)
         )
 
@@ -68,6 +69,6 @@ content (Response reference) =
     reference.content
 
 
-links : Response -> Dict String (ReferenceOr ())
+links : Response -> Dict String (ReferenceOr Link)
 links (Response reference) =
     reference.links
