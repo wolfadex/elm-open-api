@@ -40,7 +40,7 @@ decode =
         )
         (Json.Decode.field "description" Json.Decode.string)
         (Json.Decode.Extra.optionalField "headers"
-            (Json.Decode.dict (OpenApi.Types.decodeOr OpenApi.Types.decodeHeader))
+            (Json.Decode.dict (OpenApi.Types.decodeRefOr OpenApi.Types.decodeHeader))
             |> Json.Decode.map (Maybe.withDefault Dict.empty)
         )
         (Json.Decode.Extra.optionalField "content"
@@ -48,7 +48,7 @@ decode =
             |> Json.Decode.map (Maybe.withDefault Dict.empty)
         )
         (Json.Decode.Extra.optionalField "links"
-            (Json.Decode.dict (OpenApi.Types.decodeOr OpenApi.Link.decode))
+            (Json.Decode.dict (OpenApi.Types.decodeRefOr OpenApi.Link.decode))
             |> Json.Decode.map (Maybe.withDefault Dict.empty)
         )
 

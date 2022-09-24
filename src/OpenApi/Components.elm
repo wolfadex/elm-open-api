@@ -99,15 +99,15 @@ decode =
                 }
         )
         |> decodeOptionalDict "schemas" OpenApi.Schema.decode
-        |> decodeOptionalDict "responses" (OpenApi.Types.decodeOr OpenApi.Response.decode)
-        |> decodeOptionalDict "parameters" (OpenApi.Types.decodeOr OpenApi.Types.decodeParameter)
-        |> decodeOptionalDict "examples" (OpenApi.Types.decodeOr OpenApi.Example.decode)
-        |> decodeOptionalDict "requestBodies" (OpenApi.Types.decodeOr OpenApi.RequestBody.decode)
-        |> decodeOptionalDict "headers" (OpenApi.Types.decodeOr OpenApi.Types.decodeHeader)
-        |> decodeOptionalDict "securitySchemes" (OpenApi.Types.decodeOr OpenApi.SecurityScheme.decode)
-        |> decodeOptionalDict "links" (OpenApi.Types.decodeOr OpenApi.Link.decode)
-        |> decodeOptionalDict "callbacks" (OpenApi.Types.decodeOr (Debug.todo ""))
-        |> decodeOptionalDict "pathItems" (OpenApi.Types.decodeOr (Debug.todo ""))
+        |> decodeOptionalDict "responses" (OpenApi.Types.decodeRefOr OpenApi.Response.decode)
+        |> decodeOptionalDict "parameters" (OpenApi.Types.decodeRefOr OpenApi.Types.decodeParameter)
+        |> decodeOptionalDict "examples" (OpenApi.Types.decodeRefOr OpenApi.Example.decode)
+        |> decodeOptionalDict "requestBodies" (OpenApi.Types.decodeRefOr OpenApi.RequestBody.decode)
+        |> decodeOptionalDict "headers" (OpenApi.Types.decodeRefOr OpenApi.Types.decodeHeader)
+        |> decodeOptionalDict "securitySchemes" (OpenApi.Types.decodeRefOr OpenApi.SecurityScheme.decode)
+        |> decodeOptionalDict "links" (OpenApi.Types.decodeRefOr OpenApi.Link.decode)
+        |> decodeOptionalDict "callbacks" (OpenApi.Types.decodeRefOr (Debug.todo ""))
+        |> decodeOptionalDict "pathItems" (OpenApi.Types.decodeRefOr (Debug.todo ""))
 
 
 decodeOptionalDict : String -> Decoder a -> Decoder (Dict String a -> b) -> Decoder b

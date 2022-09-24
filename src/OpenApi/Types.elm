@@ -40,7 +40,7 @@ decodeEncoding =
         )
         (Json.Decode.Extra.optionalField "contentType" Json.Decode.string)
         (Json.Decode.Extra.optionalField "headers"
-            (Json.Decode.dict (decodeOr decodeHeader))
+            (Json.Decode.dict (decodeRefOr decodeHeader))
             |> Json.Decode.map (Maybe.withDefault Dict.empty)
         )
         (Json.Decode.Extra.optionalField "style" Json.Decode.string)
@@ -83,8 +83,8 @@ decodeReference =
         (Json.Decode.Extra.optionalField "description" Json.Decode.string)
 
 
-decodeOr : Decoder a -> Decoder (ReferenceOr a)
-decodeOr decoder =
+decodeRefOr : Decoder a -> Decoder (ReferenceOr a)
+decodeRefOr decoder =
     Json.Decode.oneOf
         [ Json.Decode.map Other decoder
         , Json.Decode.map Ref decodeReference
@@ -154,7 +154,7 @@ decodeParameter =
         |> Json.Decode.Pipeline.optional "content" (Json.Decode.dict decodeMediaType) Dict.empty
         |> Json.Decode.Pipeline.optional "example" Json.Decode.string ""
         |> Json.Decode.Pipeline.optional "examples"
-            (Json.Decode.dict (decodeOr decodeExample))
+            (Json.Decode.dict (decodeRefOr decodeExample))
             Dict.empty
 
 
@@ -308,7 +308,7 @@ decodeHeader =
         |> Json.Decode.Pipeline.optional "schema" (Json.Decode.maybe decodeSchema) Nothing
         |> Json.Decode.Pipeline.optional "content" (Json.Decode.dict decodeMediaType) Dict.empty
         |> Json.Decode.Pipeline.optional "example" Json.Decode.string ""
-        |> Json.Decode.Pipeline.optional "examples" (Json.Decode.dict (decodeOr decodeExample)) Dict.empty
+        |> Json.Decode.Pipeline.optional "examples" (Json.Decode.dict (decodeRefOr decodeExample)) Dict.empty
 
 
 
@@ -377,7 +377,7 @@ decodeMediaType =
         (Json.Decode.Extra.optionalField "schema" decodeSchema)
         (Json.Decode.Extra.optionalField "example" Json.Decode.value)
         (Json.Decode.Extra.optionalField "examples"
-            (Json.Decode.dict (decodeOr decodeExample))
+            (Json.Decode.dict (decodeRefOr decodeExample))
             |> Json.Decode.map (Maybe.withDefault Dict.empty)
         )
         (Json.Decode.Extra.optionalField "encoding" (Json.Decode.dict decodeEncoding)
