@@ -43,12 +43,20 @@ module OpenApi.Components exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
-import OpenApi.Example
-import OpenApi.Link exposing (Link)
-import OpenApi.RequestBody
-import OpenApi.Schema exposing (Schema)
 import OpenApi.SecurityScheme exposing (SecurityScheme)
-import OpenApi.Types exposing (Callback, Example, Header, Parameter, Path, ReferenceOr(..), RequestBody(..), Response, decodeOptionalDict)
+import OpenApi.Types
+    exposing
+        ( Callback
+        , Example
+        , Header
+        , Link
+        , Parameter
+        , Path
+        , ReferenceOr(..)
+        , RequestBody(..)
+        , Response
+        , Schema
+        )
 
 
 
@@ -96,14 +104,14 @@ decode =
                 , pathItems = pathItems_
                 }
         )
-        |> OpenApi.Types.decodeOptionalDict "schemas" OpenApi.Schema.decode
+        |> OpenApi.Types.decodeOptionalDict "schemas" OpenApi.Types.decodeSchema
         |> OpenApi.Types.decodeOptionalDict "responses" (OpenApi.Types.decodeRefOr OpenApi.Types.decodeResponse)
         |> OpenApi.Types.decodeOptionalDict "parameters" (OpenApi.Types.decodeRefOr OpenApi.Types.decodeParameter)
-        |> OpenApi.Types.decodeOptionalDict "examples" (OpenApi.Types.decodeRefOr OpenApi.Example.decode)
-        |> OpenApi.Types.decodeOptionalDict "requestBodies" (OpenApi.Types.decodeRefOr OpenApi.RequestBody.decode)
+        |> OpenApi.Types.decodeOptionalDict "examples" (OpenApi.Types.decodeRefOr OpenApi.Types.decodeExample)
+        |> OpenApi.Types.decodeOptionalDict "requestBodies" (OpenApi.Types.decodeRefOr OpenApi.Types.decodeRequestBody)
         |> OpenApi.Types.decodeOptionalDict "headers" (OpenApi.Types.decodeRefOr OpenApi.Types.decodeHeader)
         |> OpenApi.Types.decodeOptionalDict "securitySchemes" (OpenApi.Types.decodeRefOr OpenApi.SecurityScheme.decode)
-        |> OpenApi.Types.decodeOptionalDict "links" (OpenApi.Types.decodeRefOr OpenApi.Link.decode)
+        |> OpenApi.Types.decodeOptionalDict "links" (OpenApi.Types.decodeRefOr OpenApi.Types.decodeLink)
         |> OpenApi.Types.decodeOptionalDict "callbacks" (OpenApi.Types.decodeRefOr OpenApi.Types.decodeCallback)
         |> OpenApi.Types.decodeOptionalDict "pathItems" (OpenApi.Types.decodeRefOr OpenApi.Types.decodePath)
 

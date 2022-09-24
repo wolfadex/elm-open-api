@@ -559,12 +559,13 @@ type SecurityRequirement
 
 
 type alias SecurityRequirementInternal =
-    {}
+    Dict String (List String)
 
 
 decodeSecurityRequirement : Decoder SecurityRequirement
 decodeSecurityRequirement =
-    Debug.todo ""
+    Json.Decode.map SecurityRequirement
+        (Json.Decode.dict (Json.Decode.list Json.Decode.string))
 
 
 
