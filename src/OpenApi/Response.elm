@@ -10,10 +10,9 @@ module OpenApi.Response exposing
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
-import OpenApi.Header exposing (Header)
 import OpenApi.Link exposing (Link)
 import OpenApi.MediaType exposing (MediaType)
-import OpenApi.Reference exposing (ReferenceOr(..))
+import OpenApi.Types exposing (Header, ReferenceOr(..))
 
 
 type Response
@@ -41,7 +40,7 @@ decode =
         )
         (Json.Decode.field "description" Json.Decode.string)
         (Json.Decode.Extra.optionalField "headers"
-            (Json.Decode.dict (OpenApi.Reference.decodeOr OpenApi.Header.decode))
+            (Json.Decode.dict (OpenApi.Types.decodeOr OpenApi.Types.decodeHeader))
             |> Json.Decode.map (Maybe.withDefault Dict.empty)
         )
         (Json.Decode.Extra.optionalField "content"
@@ -49,7 +48,7 @@ decode =
             |> Json.Decode.map (Maybe.withDefault Dict.empty)
         )
         (Json.Decode.Extra.optionalField "links"
-            (Json.Decode.dict (OpenApi.Reference.decodeOr OpenApi.Link.decode))
+            (Json.Decode.dict (OpenApi.Types.decodeOr OpenApi.Link.decode))
             |> Json.Decode.map (Maybe.withDefault Dict.empty)
         )
 

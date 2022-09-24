@@ -31,6 +31,7 @@ import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
 import OpenApi.MediaType exposing (MediaType)
+import OpenApi.Types exposing (RequestBody(..))
 
 
 
@@ -38,15 +39,8 @@ import OpenApi.MediaType exposing (MediaType)
 
 
 {-| -}
-type RequestBody
-    = RequestBody Internal
-
-
-type alias Internal =
-    { description : Maybe String
-    , content : Dict String MediaType
-    , required : Bool
-    }
+type alias RequestBody =
+    OpenApi.Types.RequestBody
 
 
 

@@ -1,16 +1,13 @@
 module OpenApi.Header exposing (Header, decode)
 
 import Json.Decode exposing (Decoder)
+import OpenApi.Types
 
 
-type Header
-    = Header Internal
-
-
-type alias Internal =
-    {}
+type alias Header =
+    OpenApi.Types.Header
 
 
 decode : Decoder Header
 decode =
-    Debug.todo ""
+    OpenApi.Types.decodeHeader

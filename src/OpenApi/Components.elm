@@ -44,13 +44,13 @@ module OpenApi.Components exposing
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
 import Json.Decode.Pipeline
-import OpenApi.Example exposing (Example)
+import OpenApi.Example
 import OpenApi.Link exposing (Link)
-import OpenApi.Reference exposing (ReferenceOr)
-import OpenApi.RequestBody exposing (RequestBody)
+import OpenApi.RequestBody
 import OpenApi.Response exposing (Response)
 import OpenApi.Schema exposing (Schema)
 import OpenApi.SecurityScheme exposing (SecurityScheme)
+import OpenApi.Types exposing (Example, ReferenceOr(..), RequestBody(..))
 
 
 
@@ -99,15 +99,15 @@ decode =
                 }
         )
         |> decodeOptionalDict "schemas" OpenApi.Schema.decode
-        |> decodeOptionalDict "responses" (OpenApi.Reference.decodeOr OpenApi.Response.decode)
-        |> decodeOptionalDict "parameters" (OpenApi.Reference.decodeOr (Debug.todo ""))
-        |> decodeOptionalDict "examples" (OpenApi.Reference.decodeOr OpenApi.Example.decode)
-        |> decodeOptionalDict "requestBodies" (OpenApi.Reference.decodeOr OpenApi.RequestBody.decode)
-        |> decodeOptionalDict "headers" (OpenApi.Reference.decodeOr (Debug.todo ""))
-        |> decodeOptionalDict "securitySchemes" (OpenApi.Reference.decodeOr OpenApi.SecurityScheme.decode)
-        |> decodeOptionalDict "links" (OpenApi.Reference.decodeOr OpenApi.Link.decode)
-        |> decodeOptionalDict "callbacks" (OpenApi.Reference.decodeOr (Debug.todo ""))
-        |> decodeOptionalDict "pathItems" (OpenApi.Reference.decodeOr (Debug.todo ""))
+        |> decodeOptionalDict "responses" (OpenApi.Types.decodeOr OpenApi.Response.decode)
+        |> decodeOptionalDict "parameters" (OpenApi.Types.decodeOr (Debug.todo ""))
+        |> decodeOptionalDict "examples" (OpenApi.Types.decodeOr OpenApi.Example.decode)
+        |> decodeOptionalDict "requestBodies" (OpenApi.Types.decodeOr OpenApi.RequestBody.decode)
+        |> decodeOptionalDict "headers" (OpenApi.Types.decodeOr (Debug.todo ""))
+        |> decodeOptionalDict "securitySchemes" (OpenApi.Types.decodeOr OpenApi.SecurityScheme.decode)
+        |> decodeOptionalDict "links" (OpenApi.Types.decodeOr OpenApi.Link.decode)
+        |> decodeOptionalDict "callbacks" (OpenApi.Types.decodeOr (Debug.todo ""))
+        |> decodeOptionalDict "pathItems" (OpenApi.Types.decodeOr (Debug.todo ""))
 
 
 decodeOptionalDict : String -> Decoder a -> Decoder (Dict String a -> b) -> Decoder b

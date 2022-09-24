@@ -31,6 +31,7 @@ module OpenApi.Example exposing
 
 import Json.Decode exposing (Decoder, Value)
 import Json.Decode.Extra
+import OpenApi.Types exposing (Example(..))
 
 
 
@@ -38,16 +39,8 @@ import Json.Decode.Extra
 
 
 {-| -}
-type Example
-    = Example Internal
-
-
-type alias Internal =
-    { summary : Maybe String
-    , description : Maybe String
-    , value : Maybe Value
-    , externalValue : Maybe String
-    }
+type alias Example =
+    OpenApi.Types.Example
 
 
 
@@ -57,19 +50,7 @@ type alias Internal =
 {-| -}
 decode : Decoder Example
 decode =
-    Json.Decode.map4
-        (\summary_ description_ value_ externalValue_ ->
-            Example
-                { summary = summary_
-                , description = description_
-                , value = value_
-                , externalValue = externalValue_
-                }
-        )
-        (Json.Decode.Extra.optionalField "summary" Json.Decode.string)
-        (Json.Decode.Extra.optionalField "description" Json.Decode.string)
-        (Json.Decode.Extra.optionalField "value" Json.Decode.value)
-        (Json.Decode.Extra.optionalField "externalValue" Json.Decode.string)
+    OpenApi.Types.decodeExample
 
 
 

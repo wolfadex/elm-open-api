@@ -1,14 +1,11 @@
 module OpenApi.Schema exposing (Schema, decode)
 
 import Json.Decode exposing (Decoder)
+import OpenApi.Types
 
 
-type Schema
-    = Schema Internal
-
-
-type alias Internal =
-    Json.Decode.Value
+type alias Schema =
+    OpenApi.Types.Schema
 
 
 decode : Decoder Schema

@@ -32,10 +32,9 @@ module OpenApi.MediaType exposing
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder, Value)
 import Json.Decode.Extra
-import OpenApi.Encoding exposing (Encoding)
-import OpenApi.Example exposing (Example)
-import OpenApi.Reference exposing (ReferenceOr)
+import OpenApi.Encoding
 import OpenApi.Schema exposing (Schema)
+import OpenApi.Types exposing (Encoding, Example, MediaType(..), ReferenceOr)
 
 
 
@@ -43,16 +42,8 @@ import OpenApi.Schema exposing (Schema)
 
 
 {-| -}
-type MediaType
-    = MediaType Internal
-
-
-type alias Internal =
-    { schema : Maybe Schema
-    , example : Maybe Value
-    , examples : Dict String (ReferenceOr Example)
-    , encoding : Dict String Encoding
-    }
+type alias MediaType =
+    OpenApi.Types.MediaType
 
 
 
@@ -74,7 +65,7 @@ decode =
         (Json.Decode.Extra.optionalField "schema" OpenApi.Schema.decode)
         (Json.Decode.Extra.optionalField "example" Json.Decode.value)
         (Json.Decode.Extra.optionalField "examples"
-            (Json.Decode.dict (OpenApi.Reference.decodeOr OpenApi.Example.decode))
+            (Json.Decode.dict (OpenApi.Types.decodeOr OpenApi.Types.decodeExample))
             |> Json.Decode.map (Maybe.withDefault Dict.empty)
         )
         (Json.Decode.Extra.optionalField "encoding" (Json.Decode.dict OpenApi.Encoding.decode)

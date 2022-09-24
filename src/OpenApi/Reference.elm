@@ -1,54 +1,27 @@
 module OpenApi.Reference exposing
     ( Reference
-    , ReferenceOr(..)
+    , ReferenceOr
     , decode
-    , decodeOr
     , description
     , ref
     , summary
     )
 
 import Json.Decode exposing (Decoder)
-import Json.Decode.Extra
+import OpenApi.Types exposing (Reference(..), ReferenceOr(..))
 
 
-type Reference
-    = Reference Internal
+type alias Reference =
+    OpenApi.Types.Reference
 
 
-type alias Internal =
-    { ref : String
-    , summary : Maybe String
-    , description : Maybe String
-    }
-
-
-type ReferenceOr a
-    = Ref Reference
-    | Other a
+type alias ReferenceOr a =
+    OpenApi.Types.ReferenceOr a
 
 
 decode : Decoder Reference
 decode =
-    Json.Decode.map3
-        (\ref_ summary_ description_ ->
-            Reference
-                { ref = ref_
-                , summary = summary_
-                , description = description_
-                }
-        )
-        (Json.Decode.field "$ref" Json.Decode.string)
-        (Json.Decode.Extra.optionalField "summary" Json.Decode.string)
-        (Json.Decode.Extra.optionalField "description" Json.Decode.string)
-
-
-decodeOr : Decoder a -> Decoder (ReferenceOr a)
-decodeOr decoder =
-    Json.Decode.oneOf
-        [ Json.Decode.map Other decoder
-        , Json.Decode.map Ref decode
-        ]
+    OpenApi.Types.decodeReference
 
 
 description : Reference -> Maybe String
