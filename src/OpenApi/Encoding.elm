@@ -33,8 +33,6 @@ module OpenApi.Encoding exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
-import Json.Decode.Extra
-import OpenApi.Header
 import OpenApi.Types exposing (Encoding(..), Header, ReferenceOr)
 
 
@@ -54,24 +52,7 @@ type alias Encoding =
 {-| -}
 decode : Decoder Encoding
 decode =
-    Json.Decode.map5
-        (\contentType_ headers_ style_ explode_ allowReserved_ ->
-            Encoding
-                { contentType = contentType_
-                , headers = headers_
-                , style = style_
-                , explode = explode_
-                , allowReserved = allowReserved_
-                }
-        )
-        (Json.Decode.Extra.optionalField "contentType" Json.Decode.string)
-        (Json.Decode.Extra.optionalField "headers"
-            (Json.Decode.dict (OpenApi.Types.decodeOr OpenApi.Header.decode))
-            |> Json.Decode.map (Maybe.withDefault Dict.empty)
-        )
-        (Json.Decode.Extra.optionalField "style" Json.Decode.string)
-        (Json.Decode.Extra.optionalField "explode" Json.Decode.bool)
-        (Json.Decode.Extra.optionalField "allowReserved" Json.Decode.bool)
+    OpenApi.Types.decodeEncoding
 
 
 

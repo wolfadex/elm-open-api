@@ -1,9 +1,12 @@
 module OpenApi.Types exposing (..)
 
 import Dict exposing (Dict)
+import Internal
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
+import Json.Decode.Pipeline
 import Json.Encode exposing (Value)
+import OpenApi.Encoding exposing (explode)
 
 
 
@@ -21,6 +24,28 @@ type alias EncodingInternal =
     , explode : Maybe Bool
     , allowReserved : Maybe Bool
     }
+
+
+decodeEncoding : Decoder Encoding
+decodeEncoding =
+    Json.Decode.map5
+        (\contentType_ headers_ style_ explode_ allowReserved_ ->
+            Encoding
+                { contentType = contentType_
+                , headers = headers_
+                , style = style_
+                , explode = explode_
+                , allowReserved = allowReserved_
+                }
+        )
+        (Json.Decode.Extra.optionalField "contentType" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "headers"
+            (Json.Decode.dict (decodeOr decodeHeader))
+            |> Json.Decode.map (Maybe.withDefault Dict.empty)
+        )
+        (Json.Decode.Extra.optionalField "style" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "explode" Json.Decode.bool)
+        (Json.Decode.Extra.optionalField "allowReserved" Json.Decode.bool)
 
 
 
@@ -67,6 +92,167 @@ decodeOr decoder =
 
 
 
+-- Parameter
+
+
+type Parameter
+    = Parameter ParameterInternal
+
+
+type alias ParameterInternal =
+    { name : String
+    , in_ : Location
+    , description : Maybe String
+    , required : Bool
+    , deprecated : Bool
+    , allowEmptyValue : Bool
+    , schema : Maybe Schema
+    , content : Dict String MediaType
+    , example : String
+    , examples : Dict String (ReferenceOr Example)
+    }
+
+
+type Location
+    = LocQuery { style : String, explode : Bool, allowReserved : Bool }
+    | LocHeader { style : String, explode : Bool }
+    | LocPath { style : String, explode : Bool }
+    | LocCookie { style : String, explode : Bool }
+
+
+decodeParameter : Decoder Parameter
+decodeParameter =
+    Json.Decode.succeed
+        (\name ( in_, required ) description deprecated allowEmptyValue schema content example examples ->
+            Parameter
+                { name = name
+                , in_ = in_
+                , description = description
+                , required = required
+                , deprecated = deprecated
+                , allowEmptyValue = allowEmptyValue
+                , schema = schema
+                , content = content
+                , example = example
+                , examples = examples
+                }
+        )
+        |> Json.Decode.Pipeline.required "name" Json.Decode.string
+        |> Json.Decode.Pipeline.required "in" decodeLocation
+        |> Json.Decode.Pipeline.optional "description" (Json.Decode.maybe Json.Decode.string) Nothing
+        |> Json.Decode.Pipeline.optional "deprecated"
+            (Json.Decode.maybe Json.Decode.bool
+                |> Json.Decode.map (Maybe.withDefault False)
+            )
+            False
+        |> Json.Decode.Pipeline.optional "allowEmptyValue"
+            (Json.Decode.maybe Json.Decode.bool
+                |> Json.Decode.map (Maybe.withDefault False)
+            )
+            False
+        |> Json.Decode.Pipeline.optional "schema" (Json.Decode.maybe decodeSchema) Nothing
+        |> Json.Decode.Pipeline.optional "content" (Json.Decode.dict decodeMediaType) Dict.empty
+        |> Json.Decode.Pipeline.optional "example" Json.Decode.string ""
+        |> Json.Decode.Pipeline.optional "examples"
+            (Json.Decode.dict (decodeOr decodeExample))
+            Dict.empty
+
+
+decodeLocation : Decoder ( Location, Bool )
+decodeLocation =
+    Json.Decode.string
+        |> Json.Decode.andThen
+            (\in_ ->
+                case in_ of
+                    "query" ->
+                        decodeQuery
+
+                    "header" ->
+                        decodeLocHeader
+
+                    "path" ->
+                        decodePath
+
+                    "cookie" ->
+                        decodeCookie
+
+                    _ ->
+                        Json.Decode.fail ("Unknown location `in` of " ++ in_)
+            )
+
+
+decodeQuery : Decoder ( Location, Bool )
+decodeQuery =
+    Json.Decode.map4
+        (\style explode allowReserved required ->
+            ( LocQuery
+                { style = style
+                , explode = explode
+                , allowReserved = allowReserved
+                }
+            , Maybe.withDefault False required
+            )
+        )
+        (Json.Decode.field "style" Json.Decode.string)
+        (Json.Decode.field "explode" Json.Decode.bool)
+        (Json.Decode.field "allowReserved" Json.Decode.bool)
+        (Json.Decode.maybe (Json.Decode.field "required" Json.Decode.bool))
+
+
+decodeLocHeader : Decoder ( Location, Bool )
+decodeLocHeader =
+    Json.Decode.map3
+        (\style explode required ->
+            ( LocHeader
+                { style = style
+                , explode = explode
+                }
+            , Maybe.withDefault False required
+            )
+        )
+        (Json.Decode.field "style" Json.Decode.string)
+        (Json.Decode.field "explode" Json.Decode.bool)
+        (Json.Decode.maybe (Json.Decode.field "required" Json.Decode.bool))
+
+
+decodePath : Decoder ( Location, Bool )
+decodePath =
+    Internal.andThen3
+        (\style explode required ->
+            if required then
+                Json.Decode.succeed
+                    ( LocPath
+                        { style = style
+                        , explode = explode
+                        }
+                    , required
+                    )
+
+            else
+                Json.Decode.fail "If the location (`in`) is `path`, then `required` MUST be true"
+        )
+        (Json.Decode.field "style" Json.Decode.string)
+        (Json.Decode.field "explode" Json.Decode.bool)
+        (Json.Decode.field "required" Json.Decode.bool)
+
+
+decodeCookie : Decoder ( Location, Bool )
+decodeCookie =
+    Json.Decode.map3
+        (\style explode required ->
+            ( LocCookie
+                { style = style
+                , explode = explode
+                }
+            , Maybe.withDefault False required
+            )
+        )
+        (Json.Decode.field "style" Json.Decode.string)
+        (Json.Decode.field "explode" Json.Decode.bool)
+        (Json.Decode.maybe (Json.Decode.field "required" Json.Decode.bool))
+
+
+
 -- Header
 
 
@@ -75,12 +261,54 @@ type Header
 
 
 type alias HeaderInternal =
-    {}
+    { style : String
+    , explode : Bool
+    , description : Maybe String
+    , required : Bool
+    , deprecated : Bool
+    , allowEmptyValue : Bool
+    , schema : Maybe Schema
+    , content : Dict String MediaType
+    , example : String
+    , examples : Dict String (ReferenceOr Example)
+    }
 
 
 decodeHeader : Decoder Header
 decodeHeader =
-    Debug.todo ""
+    Json.Decode.succeed
+        (\style explode required description deprecated allowEmptyValue schema content example examples ->
+            Header
+                { style = style
+                , explode = explode
+                , description = description
+                , required = required
+                , deprecated = deprecated
+                , allowEmptyValue = allowEmptyValue
+                , schema = schema
+                , content = content
+                , example = example
+                , examples = examples
+                }
+        )
+        |> Json.Decode.Pipeline.required "style" Json.Decode.string
+        |> Json.Decode.Pipeline.optional "explode" Json.Decode.bool False
+        |> Json.Decode.Pipeline.optional "required" Json.Decode.bool False
+        |> Json.Decode.Pipeline.optional "description" (Json.Decode.maybe Json.Decode.string) Nothing
+        |> Json.Decode.Pipeline.optional "deprecated"
+            (Json.Decode.maybe Json.Decode.bool
+                |> Json.Decode.map (Maybe.withDefault False)
+            )
+            False
+        |> Json.Decode.Pipeline.optional "allowEmptyValue"
+            (Json.Decode.maybe Json.Decode.bool
+                |> Json.Decode.map (Maybe.withDefault False)
+            )
+            False
+        |> Json.Decode.Pipeline.optional "schema" (Json.Decode.maybe decodeSchema) Nothing
+        |> Json.Decode.Pipeline.optional "content" (Json.Decode.dict decodeMediaType) Dict.empty
+        |> Json.Decode.Pipeline.optional "example" Json.Decode.string ""
+        |> Json.Decode.Pipeline.optional "examples" (Json.Decode.dict (decodeOr decodeExample)) Dict.empty
 
 
 
@@ -93,6 +321,15 @@ type Schema
 
 type alias SchemaInternal =
     Json.Decode.Value
+
+
+decodeSchema : Decoder Schema
+decodeSchema =
+    Json.Decode.map
+        (\schema_ ->
+            Debug.todo "implement schema"
+        )
+        Json.Decode.value
 
 
 
@@ -124,6 +361,28 @@ type alias MediaTypeInternal =
     , examples : Dict String (ReferenceOr Example)
     , encoding : Dict String Encoding
     }
+
+
+decodeMediaType : Decoder MediaType
+decodeMediaType =
+    Json.Decode.map4
+        (\schema_ example_ examples_ encoding_ ->
+            MediaType
+                { schema = schema_
+                , example = example_
+                , examples = examples_
+                , encoding = encoding_
+                }
+        )
+        (Json.Decode.Extra.optionalField "schema" decodeSchema)
+        (Json.Decode.Extra.optionalField "example" Json.Decode.value)
+        (Json.Decode.Extra.optionalField "examples"
+            (Json.Decode.dict (decodeOr decodeExample))
+            |> Json.Decode.map (Maybe.withDefault Dict.empty)
+        )
+        (Json.Decode.Extra.optionalField "encoding" (Json.Decode.dict decodeEncoding)
+            |> Json.Decode.map (Maybe.withDefault Dict.empty)
+        )
 
 
 

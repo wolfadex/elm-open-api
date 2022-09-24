@@ -10,8 +10,4 @@ type alias Schema =
 
 decode : Decoder Schema
 decode =
-    Json.Decode.map
-        (\schema_ ->
-            Debug.todo "implement schema"
-        )
-        Json.Decode.value
+    OpenApi.Types.decodeSchema
