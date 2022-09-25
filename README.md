@@ -4,6 +4,9 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
 
 ## Currently Supported Features
 
+🧪 - Basic testing
+🚧 - Under construction
+
 - Versions
   - [ ] 3.0.x
   - [ ] 3.1.0 🚧
