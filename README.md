@@ -5,6 +5,7 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
 ## Currently Supported Features
 
 🧪 - Basic testing
+
 🚧 - Under construction
 
 - Versions
@@ -13,10 +14,10 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
 - [-] Schema
   - [x] OpenAPI Object
   - [x] Info Object 🧪
-  - [x] Contact Object
+  - [x] Contact Object 🧪
   - [x] License Object 🧪
-  - [x] Server Object
-  - [x] Server Variable Object
+  - [x] Server Object 🧪
+  - [x] Server Variable Object 🧪
   - [x] Components Object
   - [x] Paths Object
   - [x] Path Item Object
