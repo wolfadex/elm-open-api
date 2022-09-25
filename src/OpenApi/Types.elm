@@ -618,20 +618,19 @@ decodeOperation : Decoder Operation
 decodeOperation =
     Json.Decode.succeed
         (\tags summary description externalDocs operationId parameters requestBody responses callbacks deprecated security servers ->
-            Operation
-                { tags = tags
-                , summary = summary
-                , description = description
-                , externalDocs = externalDocs
-                , operationId = operationId
-                , parameters = parameters
-                , requestBody = requestBody
-                , responses = responses
-                , callbacks = callbacks
-                , deprecated = deprecated
-                , security = security
-                , servers = servers
-                }
+            { tags = tags
+            , summary = summary
+            , description = description
+            , externalDocs = externalDocs
+            , operationId = operationId
+            , parameters = parameters
+            , requestBody = requestBody
+            , responses = responses
+            , callbacks = callbacks
+            , deprecated = deprecated
+            , security = security
+            , servers = servers
+            }
         )
         |> Json.Decode.Pipeline.optional "tags" (Json.Decode.list Json.Decode.string) []
         |> optionalNothing "summary" Json.Decode.string
@@ -645,6 +644,14 @@ decodeOperation =
         |> Json.Decode.Pipeline.optional "deprecated" Json.Decode.bool False
         |> Json.Decode.Pipeline.optional "security" (Json.Decode.list decodeSecurityRequirement) []
         |> Json.Decode.Pipeline.optional "servers" (Json.Decode.list decodeServer) []
+        |> Json.Decode.andThen
+            (\operation ->
+                if Dict.isEmpty operation.responses then
+                    Json.Decode.fail "At least 1 response is required for an operation, none were found"
+
+                else
+                    Json.Decode.succeed (Operation operation)
+            )
 
 
 
