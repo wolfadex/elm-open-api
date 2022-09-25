@@ -32,7 +32,7 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [x] Tag Object
   - [x] Reference Object
   - [ ] Schema Object 🚧
-  - [ ] Discriminator Object 🚧
+  - [x] Discriminator Object 🚧
   - [ ] XML Object 🚧
   - [x] Security Scheme Object
   - [x] OAuth Flows Object
