@@ -35,13 +35,16 @@ module OpenApi exposing
 
 -}
 
+import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
+import Json.Decode.Pipeline
 import OpenApi.Components exposing (Components)
 import OpenApi.ExternalDocumentation exposing (ExternalDocumentation)
 import OpenApi.Info exposing (Info)
-import OpenApi.Server exposing (Server)
+import OpenApi.Server
 import OpenApi.Tag exposing (Tag)
+import OpenApi.Types exposing (Path, ReferenceOr, SecurityRequirement, Server)
 import Semver exposing (Version)
 
 
@@ -55,12 +58,10 @@ type alias Internal =
     , info : Info
     , jsonSchemaDialect : Maybe String
     , servers : List Server
-
-    -- , paths : TODO
-    -- , webhooks : TODO
+    , paths : Dict String Path
+    , webhooks : Dict String (ReferenceOr Path)
     , components : Maybe Components
-
-    -- , security : TODO
+    , security : List SecurityRequirement
     , tags : List Tag
     , externalDocs : Maybe ExternalDocumentation
     }
@@ -74,29 +75,31 @@ type alias Internal =
 -}
 decode : Decoder OpenApi
 decode =
-    Json.Decode.map7
-        (\version_ info_ jsonSchemaDialect_ externalDocs_ tags_ servers_ components_ ->
+    Json.Decode.succeed
+        (\version_ info_ jsonSchemaDialect_ externalDocs_ tags_ servers_ components_ paths_ security_ webhooks_ ->
             OpenApi
                 { version = version_
                 , info = info_
                 , jsonSchemaDialect = jsonSchemaDialect_
-                , externalDocs = externalDocs_
-                , tags = tags_
                 , servers = servers_
+                , paths = paths_
+                , webhooks = webhooks_
                 , components = components_
+                , security = security_
+                , tags = tags_
+                , externalDocs = externalDocs_
                 }
         )
-        (Json.Decode.field "openapi" decodeVersion)
-        (Json.Decode.field "info" OpenApi.Info.decode)
-        (Json.Decode.Extra.optionalField "jsonSchemaDialect" Json.Decode.string)
-        (Json.Decode.Extra.optionalField "externalDocs" OpenApi.ExternalDocumentation.decode)
-        (Json.Decode.Extra.optionalField "tags" (Json.Decode.list OpenApi.Tag.decode)
-            |> Json.Decode.map (Maybe.withDefault [])
-        )
-        (Json.Decode.Extra.optionalField "servers" (Json.Decode.list OpenApi.Server.decode)
-            |> Json.Decode.map (Maybe.withDefault [])
-        )
-        (Json.Decode.Extra.optionalField "components" OpenApi.Components.decode)
+        |> Json.Decode.Pipeline.required "openapi" decodeVersion
+        |> Json.Decode.Pipeline.required "info" OpenApi.Info.decode
+        |> OpenApi.Types.optionalNothing "jsonSchemaDialect" Json.Decode.string
+        |> OpenApi.Types.optionalNothing "externalDocs" OpenApi.ExternalDocumentation.decode
+        |> Json.Decode.Pipeline.optional "tags" (Json.Decode.list OpenApi.Tag.decode) []
+        |> Json.Decode.Pipeline.optional "servers" (Json.Decode.list OpenApi.Server.decode) []
+        |> OpenApi.Types.optionalNothing "components" OpenApi.Components.decode
+        |> Json.Decode.Pipeline.optional "paths" (Json.Decode.dict OpenApi.Types.decodePath) Dict.empty
+        |> Json.Decode.Pipeline.optional "security" (Json.Decode.list OpenApi.Types.decodeSecurityRequirement) []
+        |> Json.Decode.Pipeline.optional "webhooks" (Json.Decode.dict (OpenApi.Types.decodeRefOr OpenApi.Types.decodePath)) Dict.empty
 
 
 decodeVersion : Decoder Version

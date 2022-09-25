@@ -8,7 +8,7 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [ ] 3.0.x
   - [ ] 3.1.0 🚧
 - [-] Schema
-  - [ ] OpenAPI Object 🚧
+  - [x] OpenAPI Object
   - [x] Info Object
   - [x] Contact Object
   - [x] License Object
