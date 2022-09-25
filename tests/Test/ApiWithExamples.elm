@@ -12,21 +12,31 @@ import Test exposing (..)
 suite : Test
 suite =
     describe "Decodes an API with examples"
-        [ test "Decodes the version" <|
-            \() ->
+        (let
+            decodedOas =
                 Json.Decode.decodeString OpenApi.decode jsonString
+         in
+         [ test "Decodes the version" <|
+            \() ->
+                decodedOas
                     |> Result.map (OpenApi.version >> Semver.print)
                     |> Expect.equal (Ok "3.0.0")
-        , test "Failes if the version is missing" <|
+         , test "Failes if the version is missing" <|
             \() ->
                 Json.Decode.decodeString OpenApi.decode """{ "name": "carl" }"""
                     |> Expect.err
-        , test "Decodes the info object" <|
+         , test "Decodes the info object" <|
             \() ->
-                Json.Decode.decodeString OpenApi.decode jsonString
+                decodedOas
                     |> Result.map OpenApi.info
                     |> Expect.ok
-        ]
+         , test "Decodes the paths" <|
+            \() ->
+                decodedOas
+                    |> Result.map OpenApi.paths
+                    |> Expect.ok
+         ]
+        )
 
 
 jsonString : String

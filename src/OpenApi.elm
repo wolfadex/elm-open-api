@@ -8,6 +8,7 @@ module OpenApi exposing
     , servers
     , tags
     , version
+    , paths
     )
 
 {-| Corresponds to the [OpenAPI Object](https://spec.openapis.org/oas/latest.html#openapi-object) in the OpenAPI specification.
@@ -37,7 +38,6 @@ module OpenApi exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
-import Json.Decode.Extra
 import Json.Decode.Pipeline
 import OpenApi.Components exposing (Components)
 import OpenApi.ExternalDocumentation exposing (ExternalDocumentation)
@@ -160,3 +160,9 @@ servers (OpenApi openApi) =
 components : OpenApi -> Maybe Components
 components (OpenApi openApi) =
     openApi.components
+
+
+{-| -}
+paths : OpenApi -> Dict String Path
+paths (OpenApi openApi) =
+    openApi.paths

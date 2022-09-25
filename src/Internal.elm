@@ -3,7 +3,6 @@ module Internal exposing
     , andThen3
     )
 
-import Html exposing (a)
 import Json.Decode exposing (Decoder)
 
 
