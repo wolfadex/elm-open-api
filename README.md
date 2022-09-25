@@ -15,7 +15,7 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [x] Server Object
   - [x] Server Variable Object
   - [x] Components Object
-  - [ ] Paths Object
+  - [x] Paths Object
   - [x] Path Item Object
   - [x] Operation Object
   - [x] External Documentation Object
@@ -24,22 +24,22 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [x] Media Type Object
   - [x] Encoding Object
   - [x] Responses Object
-  - [ ] Response Object
-  - [ ] Callback Object
+  - [x] Response Object
+  - [c] Callback Object
   - [x] Example Object
   - [x] Link Object
   - [x] Header Object
   - [x] Tag Object
   - [x] Reference Object
   - [ ] Schema Object 🚧
-  - [ ] Discriminator Object
-  - [ ] XML Object
+  - [ ] Discriminator Object 🚧
+  - [ ] XML Object 🚧
   - [x] Security Scheme Object
   - [x] OAuth Flows Object
   - [x] OAuth Flow Object
   - [x] Security Requirement Object
-  - [ ] Specification Extensions
-  - [ ] Security Filtering
+  - [ ] Specification Extensions 🚧
+  - [ ] Security Filtering 🚧
 
 ## Checklist
 
