@@ -18,7 +18,7 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [x] License Object 🧪
   - [x] Server Object 🧪
   - [x] Server Variable Object 🧪
-  - [x] Components Object
+  - [x] Components Object 🧪
   - [x] Paths Object
   - [x] Path Item Object
   - [x] Operation Object

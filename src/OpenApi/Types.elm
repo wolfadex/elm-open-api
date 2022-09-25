@@ -2,7 +2,7 @@ module OpenApi.Types exposing (..)
 
 import Dict exposing (Dict)
 import Internal
-import Json.Decode exposing (Decoder, maybe)
+import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
 import Json.Decode.Pipeline
 import Json.Encode exposing (Value)
@@ -85,8 +85,8 @@ decodeReference =
 decodeRefOr : Decoder a -> Decoder (ReferenceOr a)
 decodeRefOr decoder =
     Json.Decode.oneOf
-        [ Json.Decode.map Other decoder
-        , Json.Decode.map Ref decodeReference
+        [ Json.Decode.map Ref decodeReference
+        , Json.Decode.map Other decoder
         ]
 
 
@@ -137,7 +137,7 @@ decodeParameter =
                 }
         )
         |> Json.Decode.Pipeline.required "name" Json.Decode.string
-        |> Json.Decode.Pipeline.required "in" decodeLocation
+        |> Json.Decode.Pipeline.custom decodeLocation
         |> Json.Decode.Pipeline.optional "description" (Json.Decode.maybe Json.Decode.string) Nothing
         |> Json.Decode.Pipeline.optional "deprecated"
             (Json.Decode.maybe Json.Decode.bool
@@ -152,14 +152,12 @@ decodeParameter =
         |> Json.Decode.Pipeline.optional "schema" (Json.Decode.maybe decodeSchema) Nothing
         |> Json.Decode.Pipeline.optional "content" (Json.Decode.dict decodeMediaType) Dict.empty
         |> Json.Decode.Pipeline.optional "example" Json.Decode.string ""
-        |> Json.Decode.Pipeline.optional "examples"
-            (Json.Decode.dict (decodeRefOr decodeExample))
-            Dict.empty
+        |> Json.Decode.Pipeline.optional "examples" (Json.Decode.dict (decodeRefOr decodeExample)) Dict.empty
 
 
 decodeLocation : Decoder ( Location, Bool )
 decodeLocation =
-    Json.Decode.string
+    Json.Decode.field "in" Json.Decode.string
         |> Json.Decode.andThen
             (\in_ ->
                 case in_ of
@@ -184,34 +182,44 @@ decodeQuery : Decoder ( Location, Bool )
 decodeQuery =
     Json.Decode.map4
         (\style explode allowReserved required ->
+            let
+                style_ : String
+                style_ =
+                    Maybe.withDefault "form" style
+            in
             ( LocQuery
-                { style = style
-                , explode = explode
-                , allowReserved = allowReserved
+                { style = style_
+                , explode = Maybe.withDefault (style_ == "form") explode
+                , allowReserved = Maybe.withDefault False allowReserved
                 }
             , Maybe.withDefault False required
             )
         )
-        (Json.Decode.field "style" Json.Decode.string)
-        (Json.Decode.field "explode" Json.Decode.bool)
-        (Json.Decode.field "allowReserved" Json.Decode.bool)
-        (Json.Decode.maybe (Json.Decode.field "required" Json.Decode.bool))
+        (maybeField "style" Json.Decode.string)
+        (maybeField "explode" Json.Decode.bool)
+        (maybeField "allowReserved" Json.Decode.bool)
+        (maybeField "required" Json.Decode.bool)
 
 
 decodeLocHeader : Decoder ( Location, Bool )
 decodeLocHeader =
     Json.Decode.map3
         (\style explode required ->
+            let
+                style_ : String
+                style_ =
+                    Maybe.withDefault "simple" style
+            in
             ( LocHeader
-                { style = style
-                , explode = explode
+                { style = style_
+                , explode = Maybe.withDefault (style_ == "form") explode
                 }
             , Maybe.withDefault False required
             )
         )
-        (Json.Decode.field "style" Json.Decode.string)
-        (Json.Decode.field "explode" Json.Decode.bool)
-        (Json.Decode.maybe (Json.Decode.field "required" Json.Decode.bool))
+        (maybeField "style" Json.Decode.string)
+        (maybeField "explode" Json.Decode.bool)
+        (maybeField "required" Json.Decode.bool)
 
 
 decodeLocPath : Decoder ( Location, Bool )
@@ -219,10 +227,15 @@ decodeLocPath =
     Internal.andThen3
         (\style explode required ->
             if required then
+                let
+                    style_ : String
+                    style_ =
+                        Maybe.withDefault "simple" style
+                in
                 Json.Decode.succeed
                     ( LocPath
-                        { style = style
-                        , explode = explode
+                        { style = style_
+                        , explode = Maybe.withDefault (style_ == "form") explode
                         }
                     , required
                     )
@@ -230,8 +243,8 @@ decodeLocPath =
             else
                 Json.Decode.fail "If the location (`in`) is `path`, then `required` MUST be true"
         )
-        (Json.Decode.field "style" Json.Decode.string)
-        (Json.Decode.field "explode" Json.Decode.bool)
+        (maybeField "style" Json.Decode.string)
+        (maybeField "explode" Json.Decode.bool)
         (Json.Decode.field "required" Json.Decode.bool)
 
 
@@ -239,16 +252,21 @@ decodeCookie : Decoder ( Location, Bool )
 decodeCookie =
     Json.Decode.map3
         (\style explode required ->
+            let
+                style_ : String
+                style_ =
+                    Maybe.withDefault "form" style
+            in
             ( LocCookie
-                { style = style
-                , explode = explode
+                { style = style_
+                , explode = Maybe.withDefault (style_ == "form") explode
                 }
             , Maybe.withDefault False required
             )
         )
-        (Json.Decode.field "style" Json.Decode.string)
-        (Json.Decode.field "explode" Json.Decode.bool)
-        (Json.Decode.maybe (Json.Decode.field "required" Json.Decode.bool))
+        (maybeField "style" Json.Decode.string)
+        (maybeField "explode" Json.Decode.bool)
+        (maybeField "required" Json.Decode.bool)
 
 
 
