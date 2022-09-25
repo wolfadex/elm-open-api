@@ -195,10 +195,10 @@ decodeQuery =
             , Maybe.withDefault False required
             )
         )
-        (maybeField "style" Json.Decode.string)
-        (maybeField "explode" Json.Decode.bool)
-        (maybeField "allowReserved" Json.Decode.bool)
-        (maybeField "required" Json.Decode.bool)
+        (Json.Decode.Extra.optionalField "style" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "explode" Json.Decode.bool)
+        (Json.Decode.Extra.optionalField "allowReserved" Json.Decode.bool)
+        (Json.Decode.Extra.optionalField "required" Json.Decode.bool)
 
 
 decodeLocHeader : Decoder ( Location, Bool )
@@ -217,9 +217,9 @@ decodeLocHeader =
             , Maybe.withDefault False required
             )
         )
-        (maybeField "style" Json.Decode.string)
-        (maybeField "explode" Json.Decode.bool)
-        (maybeField "required" Json.Decode.bool)
+        (Json.Decode.Extra.optionalField "style" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "explode" Json.Decode.bool)
+        (Json.Decode.Extra.optionalField "required" Json.Decode.bool)
 
 
 decodeLocPath : Decoder ( Location, Bool )
@@ -243,8 +243,8 @@ decodeLocPath =
             else
                 Json.Decode.fail "If the location (`in`) is `path`, then `required` MUST be true"
         )
-        (maybeField "style" Json.Decode.string)
-        (maybeField "explode" Json.Decode.bool)
+        (Json.Decode.Extra.optionalField "style" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "explode" Json.Decode.bool)
         (Json.Decode.field "required" Json.Decode.bool)
 
 
@@ -264,9 +264,9 @@ decodeCookie =
             , Maybe.withDefault False required
             )
         )
-        (maybeField "style" Json.Decode.string)
-        (maybeField "explode" Json.Decode.bool)
-        (maybeField "required" Json.Decode.bool)
+        (Json.Decode.Extra.optionalField "style" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "explode" Json.Decode.bool)
+        (Json.Decode.Extra.optionalField "required" Json.Decode.bool)
 
 
 
@@ -355,10 +355,10 @@ decodeSchema =
                 , example = example
                 }
         )
-        (maybeField "discriminator" decodeDiscriminator)
-        (maybeField "xml" decodeXml)
-        (maybeField "externalDocs" decodeExternalDocumentation)
-        (maybeField "example" Json.Decode.value)
+        (Json.Decode.Extra.optionalField "discriminator" decodeDiscriminator)
+        (Json.Decode.Extra.optionalField "xml" decodeXml)
+        (Json.Decode.Extra.optionalField "externalDocs" decodeExternalDocumentation)
+        (Json.Decode.Extra.optionalField "example" Json.Decode.value)
 
 
 
@@ -417,9 +417,9 @@ decodeXml =
                 , wrapped = wrapped
                 }
         )
-        (maybeField "name" Json.Decode.string)
-        (maybeField "namespace" Json.Decode.string)
-        (maybeField "prefix" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "name" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "namespace" Json.Decode.string)
+        (Json.Decode.Extra.optionalField "prefix" Json.Decode.string)
         (Json.Decode.maybe (Json.Decode.field "name" Json.Decode.bool)
             |> Json.Decode.map (Maybe.withDefault False)
         )
@@ -911,8 +911,3 @@ optionalNothing fieldName decoder =
 decodeOptionalDict : String -> Decoder a -> Decoder (Dict String a -> b) -> Decoder b
 decodeOptionalDict field decoder =
     Json.Decode.Pipeline.optional field (Json.Decode.dict decoder) Dict.empty
-
-
-maybeField : String -> Decoder a -> Decoder (Maybe a)
-maybeField field decoder =
-    Json.Decode.maybe (Json.Decode.field field decoder)
