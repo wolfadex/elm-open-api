@@ -4,24 +4,24 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
 
 ## Currently Supported Features
 
-🧪 - Basic testing
-
 🚧 - Under construction
+
+🧪 - Basic testing done
 
 - Versions
   - [ ] 3.0.x
-  - [ ] 3.1.0 🚧
+  - [ ] 🚧 3.1.0
 - [-] Schema
   - [x] OpenAPI Object
-  - [x] Info Object 🧪
-  - [x] Contact Object 🧪
-  - [x] License Object 🧪
-  - [x] Server Object 🧪
-  - [x] Server Variable Object 🧪
-  - [x] Components Object 🧪
-  - [x] Paths Object 🧪
-  - [x] Path Item Object 🧪
-  - [x] Operation Object
+  - [x] 🧪 Info Object
+  - [x] 🧪 Contact Object
+  - [x] 🧪 License Object
+  - [x] 🧪 Server Object
+  - [x] 🧪 Server Variable Object
+  - [x] 🧪 Components Object
+  - [x] 🧪 Paths Object
+  - [x] 🧪 Path Item Object
+  - [x] 🧪 Operation Object
   - [x] External Documentation Object
   - [x] Parameter Object
   - [x] Request Body Object
@@ -42,8 +42,8 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [x] OAuth Flows Object
   - [x] OAuth Flow Object
   - [x] Security Requirement Object
-  - [ ] Specification Extensions 🚧
-  - [ ] Security Filtering 🚧
+  - [ ] 🚧 Specification Extensions
+  - [ ] 🚧 Security Filtering
 
 ## Checklist
 
