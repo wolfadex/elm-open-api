@@ -2,7 +2,7 @@ module OpenApi.Types exposing (..)
 
 import Dict exposing (Dict)
 import Internal
-import Json.Decode exposing (Decoder)
+import Json.Decode exposing (Decoder, maybe)
 import Json.Decode.Extra
 import Json.Decode.Pipeline
 import Json.Encode exposing (Value)
@@ -379,12 +379,35 @@ type Xml
 
 
 type alias XmlInternal =
-    {}
+    { name : Maybe String
+    , namespace : Maybe String
+    , prefix : Maybe String
+    , attribute : Bool
+    , wrapped : Bool
+    }
 
 
 decodeXml : Decoder Xml
 decodeXml =
-    Debug.todo "implement Xml"
+    Json.Decode.map5
+        (\name namespace prefix attribute wrapped ->
+            Xml
+                { name = name
+                , namespace = namespace
+                , prefix = prefix
+                , attribute = attribute
+                , wrapped = wrapped
+                }
+        )
+        (maybeField "name" Json.Decode.string)
+        (maybeField "namespace" Json.Decode.string)
+        (maybeField "prefix" Json.Decode.string)
+        (Json.Decode.maybe (Json.Decode.field "name" Json.Decode.bool)
+            |> Json.Decode.map (Maybe.withDefault False)
+        )
+        (Json.Decode.maybe (Json.Decode.field "name" Json.Decode.bool)
+            |> Json.Decode.map (Maybe.withDefault False)
+        )
 
 
 
