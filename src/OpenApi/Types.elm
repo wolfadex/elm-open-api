@@ -20,8 +20,8 @@ type alias EncodingInternal =
     { contentType : Maybe String
     , headers : Dict String (ReferenceOr Header)
     , style : Maybe String
-    , explode : Maybe Bool
-    , allowReserved : Maybe Bool
+    , explode : Bool
+    , allowReserved : Bool
     }
 
 
@@ -33,8 +33,8 @@ decodeEncoding =
                 { contentType = contentType_
                 , headers = headers_
                 , style = style_
-                , explode = explode_
-                , allowReserved = allowReserved_
+                , explode = Maybe.withDefault (style_ == Just "form") explode_
+                , allowReserved = Maybe.withDefault False allowReserved_
                 }
         )
         (Json.Decode.Extra.optionalField "contentType" Json.Decode.string)

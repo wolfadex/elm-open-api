@@ -78,12 +78,12 @@ style (Encoding encoding) =
 
 
 {-| -}
-explode : Encoding -> Maybe Bool
+explode : Encoding -> Bool
 explode (Encoding encoding) =
     encoding.explode
 
 
 {-| -}
-allowReserved : Encoding -> Maybe Bool
+allowReserved : Encoding -> Bool
 allowReserved (Encoding encoding) =
     encoding.allowReserved

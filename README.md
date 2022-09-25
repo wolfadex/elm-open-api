@@ -26,7 +26,7 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [x] 🧪 Parameter Object
   - [x] 🧪 Request Body Object
   - [x] 🧪 Media Type Object
-  - [x] Encoding Object
+  - [x] 🧪 Encoding Object
   - [x] Responses Object
   - [x] Response Object
   - [x] Callback Object
