@@ -319,16 +319,72 @@ type Schema
 
 
 type alias SchemaInternal =
-    Json.Decode.Value
+    { discriminator : Maybe Discriminator
+    , xml : Maybe Xml
+    , externalDocs : Maybe ExternalDocumentation
+    , example : Maybe Value
+    }
 
 
 decodeSchema : Decoder Schema
 decodeSchema =
-    Json.Decode.map
-        (\schema_ ->
-            Debug.todo "implement schema"
+    Json.Decode.map4
+        (\discriminator xml externalDocs example ->
+            Schema
+                { discriminator = discriminator
+                , xml = xml
+                , externalDocs = externalDocs
+                , example = example
+                }
         )
-        Json.Decode.value
+        (maybeField "discriminator" decodeDiscriminator)
+        (maybeField "xml" decodeXml)
+        (maybeField "externalDocs" decodeExternalDocumentation)
+        (maybeField "example" Json.Decode.value)
+
+
+
+-- Discriminator
+
+
+type Discriminator
+    = Discriminator DiscriminatorInternal
+
+
+type alias DiscriminatorInternal =
+    { propertyName : String
+    , mapping : Dict String String
+    }
+
+
+decodeDiscriminator : Decoder Discriminator
+decodeDiscriminator =
+    Json.Decode.map2
+        (\propertyName mapping ->
+            Discriminator
+                { propertyName = propertyName
+                , mapping = mapping
+                }
+        )
+        (Json.Decode.field "propertyName" Json.Decode.string)
+        (Json.Decode.field "mapping" (Json.Decode.dict Json.Decode.string))
+
+
+
+-- Xml
+
+
+type Xml
+    = Xml XmlInternal
+
+
+type alias XmlInternal =
+    {}
+
+
+decodeXml : Decoder Xml
+decodeXml =
+    Debug.todo "implement Xml"
 
 
 
@@ -814,3 +870,8 @@ optionalNothing fieldName decoder =
 decodeOptionalDict : String -> Decoder a -> Decoder (Dict String a -> b) -> Decoder b
 decodeOptionalDict field decoder =
     Json.Decode.Pipeline.optional field (Json.Decode.dict decoder) Dict.empty
+
+
+maybeField : String -> Decoder a -> Decoder (Maybe a)
+maybeField field decoder =
+    Json.Decode.maybe (Json.Decode.field field decoder)
