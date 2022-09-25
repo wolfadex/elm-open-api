@@ -54,10 +54,15 @@ type alias Internal =
     { version : Version
     , info : Info
     , jsonSchemaDialect : Maybe String
-    , externalDocs : Maybe ExternalDocumentation
-    , tags : List Tag
     , servers : List Server
+
+    -- , paths : TODO
+    -- , webhooks : TODO
     , components : Maybe Components
+
+    -- , security : TODO
+    , tags : List Tag
+    , externalDocs : Maybe ExternalDocumentation
     }
 
 

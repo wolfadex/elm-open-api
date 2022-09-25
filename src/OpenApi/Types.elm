@@ -577,12 +577,27 @@ type Callback
 
 
 type alias CallbackInternal =
-    {}
+    { expression : String
+    , refOrPath : ReferenceOr Path
+    }
 
 
 decodeCallback : Decoder Callback
 decodeCallback =
-    Debug.todo ""
+    Json.Decode.dict (Json.Decode.lazy (\() -> decodeRefOr decodePath))
+        |> Json.Decode.andThen
+            (\dict ->
+                case Dict.toList dict of
+                    [ ( expression, refOrPath ) ] ->
+                        Callback
+                            { expression = expression
+                            , refOrPath = refOrPath
+                            }
+                            |> Json.Decode.succeed
+
+                    _ ->
+                        Json.Decode.fail "Expected a single expression but found zero or multiple"
+            )
 
 
 
