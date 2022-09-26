@@ -1,4 +1,7 @@
-module OpenApi.Discriminator exposing (..)
+module OpenApi.Discriminator exposing
+    ( Discriminator
+    , decode
+    )
 
 import Json.Decode exposing (Decoder)
 import OpenApi.Types exposing (Discriminator)

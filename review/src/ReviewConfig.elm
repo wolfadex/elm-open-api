@@ -17,8 +17,6 @@ import NoExposingEverything
 import NoImportingEverything
 import NoInconsistentAliases
 import NoMissingTypeAnnotation
-import NoModuleOnExposedNames
-import NoUnused.CustomTypeConstructorArgs
 import NoUnused.CustomTypeConstructors
 import NoUnused.Dependencies
 import NoUnused.Exports
@@ -34,7 +32,6 @@ config =
     [ NoUnused.Modules.rule
     , NoUnused.Exports.rule
     , NoUnused.Dependencies.rule
-    , NoUnused.CustomTypeConstructorArgs.rule
 
     --, NoUnused.Variables.rule
     -- , NoUnused.CustomTypeConstructors.rule []
@@ -56,5 +53,4 @@ config =
     --    ]
     --    |> NoInconsistentAliases.noMissingAliases
     --    |> NoInconsistentAliases.rule
-    , NoModuleOnExposedNames.rule
     ]
