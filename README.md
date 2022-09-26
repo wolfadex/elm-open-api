@@ -32,7 +32,7 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [x] 🧪 Callback Object
   - [x] 🧪 Example Object
   - [x] 🧪 Link Object
-  - [x] Header Object
+  - [x] 🧪 Header Object
   - [x] Tag Object
   - [x] Reference Object
   - [x] Schema Object
