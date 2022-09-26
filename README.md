@@ -39,7 +39,7 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
     - Need to do parsing of Json Schema. The available packages are incomplete.
   - [x] Discriminator Object
   - [x] XML Object
-  - [x] Security Scheme Object
+  - [x] 🧪 Security Scheme Object
   - [x] OAuth Flows Object
   - [x] OAuth Flow Object
   - [x] Security Requirement Object

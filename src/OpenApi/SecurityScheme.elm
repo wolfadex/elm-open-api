@@ -4,6 +4,7 @@ module OpenApi.SecurityScheme exposing
     , decode
     , description
     , type_
+    , SecuritySchemeIn(..)
     )
 
 {-| Corresponds to the [Security Scheme Object](https://spec.openapis.org/oas/latest.html#security-scheme-object) in the OpenAPI specification.
