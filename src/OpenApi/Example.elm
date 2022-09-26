@@ -30,7 +30,6 @@ module OpenApi.Example exposing
 -}
 
 import Json.Decode exposing (Decoder, Value)
-import Json.Decode.Extra
 import OpenApi.Types exposing (Example(..))
 
 
