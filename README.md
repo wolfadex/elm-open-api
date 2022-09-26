@@ -42,7 +42,7 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [x] 🧪 Security Scheme Object
   - [x] 🧪 OAuth Flows Object
   - [x] 🧪 OAuth Flow Object
-  - [x] Security Requirement Object
+  - [x] 🧪 Security Requirement Object
   - [ ] 🚧 Specification Extensions
   - [ ] 🚧 Security Filtering
 
