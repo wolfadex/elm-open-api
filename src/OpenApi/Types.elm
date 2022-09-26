@@ -337,28 +337,31 @@ type Schema
 
 
 type alias SchemaInternal =
-    { discriminator : Maybe Discriminator
-    , xml : Maybe Xml
-    , externalDocs : Maybe ExternalDocumentation
-    , example : Maybe Value
-    }
+    -- { discriminator : Maybe Discriminator
+    -- , xml : Maybe Xml
+    -- , externalDocs : Maybe ExternalDocumentation
+    -- , example : Maybe Value
+    -- }
+    Value
 
 
 decodeSchema : Decoder Schema
 decodeSchema =
-    Json.Decode.map4
-        (\discriminator xml externalDocs example ->
-            Schema
-                { discriminator = discriminator
-                , xml = xml
-                , externalDocs = externalDocs
-                , example = example
-                }
-        )
-        (Json.Decode.Extra.optionalField "discriminator" decodeDiscriminator)
-        (Json.Decode.Extra.optionalField "xml" decodeXml)
-        (Json.Decode.Extra.optionalField "externalDocs" decodeExternalDocumentation)
-        (Json.Decode.Extra.optionalField "example" Json.Decode.value)
+    -- Json.Decode.map4
+    --     (\discriminator xml externalDocs example ->
+    --         Schema
+    --             { discriminator = discriminator
+    --             , xml = xml
+    --             , externalDocs = externalDocs
+    --             , example = example
+    --             }
+    --     )
+    --     (Json.Decode.Extra.optionalField "discriminator" decodeDiscriminator)
+    --     (Json.Decode.Extra.optionalField "xml" decodeXml)
+    --     (Json.Decode.Extra.optionalField "externalDocs" decodeExternalDocumentation)
+    --     (Json.Decode.Extra.optionalField "example" Json.Decode.value)
+    Json.Decode.map Schema
+        Json.Decode.value
 
 
 
