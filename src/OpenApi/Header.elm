@@ -28,7 +28,7 @@ decode =
     OpenApi.Types.decodeHeader
 
 
-style : Header -> String
+style : Header -> Maybe String
 style (Header header) =
     header.style
 

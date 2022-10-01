@@ -19,7 +19,7 @@ suite =
             \() ->
                 decodedHeader
                     |> Result.map OpenApi.Header.style
-                    |> Expect.equal (Ok "simple")
+                    |> Expect.equal (Ok (Just "simple"))
         , test "description" <|
             \() ->
                 decodedHeader

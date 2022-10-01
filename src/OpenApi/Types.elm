@@ -278,7 +278,7 @@ type Header
 
 
 type alias HeaderInternal =
-    { style : String
+    { style : Maybe String
     , explode : Bool
     , description : Maybe String
     , required : Bool
@@ -308,10 +308,10 @@ decodeHeader =
                 , examples = examples
                 }
         )
-        |> Json.Decode.Pipeline.required "style" Json.Decode.string
+        |> optionalNothing "style" Json.Decode.string
         |> Json.Decode.Pipeline.optional "explode" Json.Decode.bool False
         |> Json.Decode.Pipeline.optional "required" Json.Decode.bool False
-        |> Json.Decode.Pipeline.optional "description" (Json.Decode.maybe Json.Decode.string) Nothing
+        |> optionalNothing "description" Json.Decode.string
         |> Json.Decode.Pipeline.optional "deprecated"
             (Json.Decode.maybe Json.Decode.bool
                 |> Json.Decode.map (Maybe.withDefault False)
@@ -322,7 +322,7 @@ decodeHeader =
                 |> Json.Decode.map (Maybe.withDefault False)
             )
             False
-        |> Json.Decode.Pipeline.optional "schema" (Json.Decode.maybe decodeSchema) Nothing
+        |> optionalNothing "schema" decodeSchema
         |> Json.Decode.Pipeline.optional "content" (Json.Decode.dict decodeMediaType) Dict.empty
         |> Json.Decode.Pipeline.optional "example" Json.Decode.string ""
         |> Json.Decode.Pipeline.optional "examples" (Json.Decode.dict (decodeRefOr decodeExample)) Dict.empty
