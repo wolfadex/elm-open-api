@@ -59,7 +59,7 @@ suite =
             \() ->
                 decodedHeader
                     |> Result.map OpenApi.Header.example
-                    |> Expect.equal (Ok "")
+                    |> Expect.ok
         , test "examples" <|
             \() ->
                 decodedHeader

@@ -286,7 +286,7 @@ type alias HeaderInternal =
     , allowEmptyValue : Bool
     , schema : Maybe Schema
     , content : Dict String MediaType
-    , example : String
+    , example : Maybe Value
     , examples : Dict String (ReferenceOr Example)
     }
 
@@ -324,7 +324,7 @@ decodeHeader =
             False
         |> optionalNothing "schema" decodeSchema
         |> Json.Decode.Pipeline.optional "content" (Json.Decode.dict decodeMediaType) Dict.empty
-        |> Json.Decode.Pipeline.optional "example" Json.Decode.string ""
+        |> optionalNothing "example" Json.Decode.value
         |> Json.Decode.Pipeline.optional "examples" (Json.Decode.dict (decodeRefOr decodeExample)) Dict.empty
 
 

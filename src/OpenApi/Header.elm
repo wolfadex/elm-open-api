@@ -15,6 +15,7 @@ module OpenApi.Header exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
+import Json.Encode exposing (Value)
 import OpenApi.Example exposing (Example)
 import OpenApi.Types exposing (Header(..), MediaType, ReferenceOr, Schema)
 
@@ -68,7 +69,7 @@ content (Header header) =
     header.content
 
 
-example : Header -> String
+example : Header -> Maybe Value
 example (Header header) =
     header.example
 
