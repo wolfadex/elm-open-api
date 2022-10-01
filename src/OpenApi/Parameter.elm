@@ -20,6 +20,7 @@ module OpenApi.Parameter exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
+import Json.Encode exposing (Value)
 import OpenApi.Types exposing (Example, Location(..), MediaType, Parameter(..), ReferenceOr, Schema)
 
 
@@ -140,7 +141,7 @@ content (Parameter parameter_) =
     parameter_.content
 
 
-example : Parameter -> String
+example : Parameter -> Maybe Value
 example (Parameter parameter_) =
     parameter_.example
 

@@ -44,7 +44,7 @@ suite =
             \() ->
                 decodedParameter
                     |> Result.map OpenApi.Parameter.example
-                    |> Expect.equal (Ok "")
+                    |> Expect.ok
         , test "examples" <|
             \() ->
                 decodedParameter

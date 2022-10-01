@@ -75,6 +75,10 @@ suite =
                 decodedOperation
                     |> Result.map OpenApi.Operation.servers
                     |> Expect.equal (Ok [])
+        , test "gh failing?" <|
+            \() ->
+                Json.Decode.decodeString OpenApi.Operation.decode failingExample
+                    |> Expect.ok
         ]
 
 
@@ -142,3 +146,94 @@ example =
     }
   ]
 }"""
+
+
+failingExample : String
+failingExample =
+    """{
+        "summary": "List check suites for a Git reference",
+        "description": "**Note:** The Checks API only looks for pushes in the repository where the check suite or check run were created. Pushes to a branch in a forked repository are not detected and return an empty `pull_requests` array and a `null` value for `head_branch`.\\n\\nLists check suites for a commit `ref`. The `ref` can be a SHA, branch name, or a tag name. GitHub Apps must have the `checks:read` permission on a private repository or pull access to a public repository to list check suites. OAuth Apps and authenticated users must have the `repo` scope to get check suites in a private repository.",
+        "tags": ["checks"],
+        "operationId": "checks/list-suites-for-ref",
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/rest/reference/checks#list-check-suites-for-a-git-reference"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/owner"
+          },
+          {
+            "$ref": "#/components/parameters/repo"
+          },
+          {
+            "name": "ref",
+            "description": "ref parameter",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-multi-segment": true
+          },
+          {
+            "name": "app_id",
+            "description": "Filters check suites by GitHub App `id`.",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "$ref": "#/components/parameters/check-name"
+          },
+          {
+            "$ref": "#/components/parameters/per-page"
+          },
+          {
+            "$ref": "#/components/parameters/page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["total_count", "check_suites"],
+                  "properties": {
+                    "total_count": {
+                      "type": "integer"
+                    },
+                    "check_suites": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/check-suite"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/check-suite-paginated"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "$ref": "#/components/headers/link"
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": true,
+          "category": "checks",
+          "subcategory": "suites"
+        }
+      }"""
