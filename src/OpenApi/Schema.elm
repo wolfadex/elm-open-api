@@ -1,15 +1,11 @@
 module OpenApi.Schema exposing
     ( Schema
-    ,  decode
-       -- , discriminator
-       -- , example
-       -- , externalDocs
-       -- , xml
-
+    , decode
+    , get
     )
 
 import Json.Decode exposing (Decoder, Value)
-import OpenApi.Header exposing (schema)
+import Json.Schema.Definitions
 import OpenApi.Types exposing (Discriminator, ExternalDocumentation, Schema(..), Xml)
 
 
@@ -20,6 +16,11 @@ type alias Schema =
 decode : Decoder Schema
 decode =
     OpenApi.Types.decodeSchema
+
+
+get : Schema -> Json.Schema.Definitions.Schema
+get (Schema schema_) =
+    schema_
 
 
 

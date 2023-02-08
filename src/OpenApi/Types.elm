@@ -6,6 +6,7 @@ import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
 import Json.Decode.Pipeline
 import Json.Encode exposing (Value)
+import Json.Schema.Definitions
 
 
 
@@ -342,7 +343,8 @@ type alias SchemaInternal =
     -- , externalDocs : Maybe ExternalDocumentation
     -- , example : Maybe Value
     -- }
-    Value
+    -- Value
+    Json.Schema.Definitions.Schema
 
 
 decodeSchema : Decoder Schema
@@ -361,7 +363,8 @@ decodeSchema =
     --     (Json.Decode.Extra.optionalField "externalDocs" decodeExternalDocumentation)
     --     (Json.Decode.Extra.optionalField "example" Json.Decode.value)
     Json.Decode.map Schema
-        Json.Decode.value
+        -- Json.Decode.value
+        Json.Schema.Definitions.decoder
 
 
 
