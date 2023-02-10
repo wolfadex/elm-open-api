@@ -35,8 +35,8 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [x] 🧪 Header Object
   - [x] 🧪 Tag Object
   - [x] 🧪 Reference Object
-  - [x] 🧪🚧 Schema Object
-    - Need to do parsing of Json Schema. The available packages are incomplete.
+  - [x] 🧪 Schema Object
+    - Uses [json-tools/json-schema](https://package.elm-lang.org/packages/json-tools/json-schema/latest/)
   - [x] Discriminator Object
   - [x] XML Object
   - [x] 🧪 Security Scheme Object
