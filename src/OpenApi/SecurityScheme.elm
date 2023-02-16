@@ -10,19 +10,19 @@ module OpenApi.SecurityScheme exposing
 {-| Corresponds to the [Security Scheme Object](https://spec.openapis.org/oas/latest.html#security-scheme-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs SecurityScheme
 @docs SecuritySchemeType
 @docs SecuritySchemeIn
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs description
 @docs type_

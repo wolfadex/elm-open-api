@@ -15,13 +15,20 @@ module OpenApi.Path exposing
     , trace
     )
 
-{-|
+{-| Corresponds to the [Path Item Object](https://spec.openapis.org/oas/latest#path-item-object) in the OpenAPI specification.
+
+
+# Types
 
 @docs Path
+
+
+# Decoding
+
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs delete
 @docs description

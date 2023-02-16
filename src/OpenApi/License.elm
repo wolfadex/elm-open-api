@@ -9,17 +9,17 @@ module OpenApi.License exposing
 {-| Corresponds to the [License Object](https://spec.openapis.org/oas/latest.html#license-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs License
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs identifier
 @docs name

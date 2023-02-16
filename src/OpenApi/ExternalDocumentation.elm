@@ -8,17 +8,17 @@ module OpenApi.ExternalDocumentation exposing
 {-| Corresponds to the [External Documentation Object](https://spec.openapis.org/oas/latest.html#external-documentation-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs ExternalDocumentation
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs description
 @docs url

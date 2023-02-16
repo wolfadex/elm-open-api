@@ -7,14 +7,20 @@ module OpenApi.Response exposing
     , links
     )
 
-{-|
+{-| Corresponds to the [Response Object](https://spec.openapis.org/oas/latest#response-object) in the OpenAPI specification.
+
+
+# Types
 
 @docs Response
+
+
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs content
 @docs description

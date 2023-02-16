@@ -6,20 +6,20 @@ module OpenApi.Contact exposing
     , url
     )
 
-{-| Corresponds to the [Contact Object](https://spec.openapis.org/oas/latest.html#contact-object) in the OpenAPI specification.
+{-| Corresponds to the [Contact Object](https://spec.openapis.org/oas/latest#contact-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs Contact
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs email
 @docs name

@@ -16,17 +16,17 @@ module OpenApi.Components exposing
 {-| Corresponds to the [Components Object](https://spec.openapis.org/oas/latest.html#components-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs Components
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs callbacks
 @docs examples

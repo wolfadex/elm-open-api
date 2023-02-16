@@ -13,13 +13,20 @@ module OpenApi.Header exposing
     , style
     )
 
-{-|
+{-| Corresponds to the [Header Object](https://spec.openapis.org/oas/latest#header-object) in the OpenAPI specification.
+
+
+# Types
 
 @docs Header
+
+
+# Decoding
+
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs allowEmptyValue
 @docs content

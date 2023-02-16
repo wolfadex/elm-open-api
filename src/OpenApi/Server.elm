@@ -9,17 +9,17 @@ module OpenApi.Server exposing
 {-| Corresponds to the [Server Object](https://spec.openapis.org/oas/latest.html#server-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs Server
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs description
 @docs url

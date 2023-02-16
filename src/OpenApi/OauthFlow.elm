@@ -31,7 +31,7 @@ module OpenApi.OauthFlow exposing
 {-| Corresponds to the [OAuth Flows Object](https://spec.openapis.org/oas/latest.html#oauth-flows-object) in the OpenAPI specification, as well as the [OAuth Flow Object](https://spec.openapis.org/oas/latest.html#oauth-flow-object).
 
 
-## Types
+# Types
 
 @docs OauthFlows
 @docs ImplicitFlow
@@ -40,7 +40,7 @@ module OpenApi.OauthFlow exposing
 @docs AuthorizationCodeFlow
 
 
-## Decoding
+# Decoding
 
 @docs decodeFlows
 @docs decodeImplicit
@@ -49,10 +49,10 @@ module OpenApi.OauthFlow exposing
 @docs decodeAuthorizationCode
 
 
-## Querying
+# Querying
 
 
-### OAuth Flows
+## OAuth Flows
 
 @docs implicit
 @docs password
@@ -60,28 +60,28 @@ module OpenApi.OauthFlow exposing
 @docs authorizationCode
 
 
-### Implicit FLows
+## Implicit Flows
 
 @docs implicitAuthorizationUrl
 @docs implicitRefreshUrl
 @docs implicitScopes
 
 
-### Password FLows
+## Password Flows
 
 @docs passwordTokenUrl
 @docs passwordRefreshUrl
 @docs passwordScopes
 
 
-### Client Credential FLows
+## Client Credential Flows
 
 @docs clientCredentialTokenUrl
 @docs clientCredentialRefreshUrl
 @docs clientCredentialScopes
 
 
-### Authorization Code FLows
+## Authorization Code Flows
 
 @docs authorizationCodeAuthorizationUrl
 @docs authorizationCodeTokenUrl

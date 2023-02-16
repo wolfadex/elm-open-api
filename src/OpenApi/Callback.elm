@@ -5,13 +5,20 @@ module OpenApi.Callback exposing
     , value
     )
 
-{-|
+{-| Corresponds to the [Callback Object](https://spec.openapis.org/oas/latest#callback-object) in the OpenAPI specification.
+
+
+# Types
 
 @docs Callback
+
+
+# Decoding
+
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs expression
 @docs value

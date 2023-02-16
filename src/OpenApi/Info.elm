@@ -13,17 +13,17 @@ module OpenApi.Info exposing
 {-| Corresponds to the [Info Object](https://spec.openapis.org/oas/latest.html#info-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs Info
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs contact
 @docs description

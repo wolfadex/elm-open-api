@@ -4,14 +4,20 @@ module OpenApi.SecurityRequirement exposing
     , requirements
     )
 
-{-|
+{-| Corresponds to the [Security Requirement Object](https://spec.openapis.org/oas/latest#security-requirement-object) in the OpenAPI specification.
+
+
+# Types
 
 @docs SecurityRequirement
+
+
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs requirements
 

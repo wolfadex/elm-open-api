@@ -12,17 +12,17 @@ module OpenApi.Link exposing
 {-| Corresponds to the [Link Object](https://spec.openapis.org/oas/latest.html#link-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs Link
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs description
 @docs operationId

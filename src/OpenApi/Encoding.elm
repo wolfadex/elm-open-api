@@ -11,17 +11,17 @@ module OpenApi.Encoding exposing
 {-| Corresponds to the [Encoding Object](https://spec.openapis.org/oas/latest.html#encoding-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs Encoding
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs allowReserved
 @docs contentType

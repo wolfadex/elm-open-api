@@ -10,17 +10,17 @@ module OpenApi.MediaType exposing
 {-| Corresponds to the [MediaType Object](https://spec.openapis.org/oas/latest.html#media-type-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs MediaType
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs encoding
 @docs example

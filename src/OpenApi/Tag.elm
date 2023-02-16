@@ -9,17 +9,17 @@ module OpenApi.Tag exposing
 {-| Corresponds to the [Tag Object](https://spec.openapis.org/oas/latest.html#tag-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs Tag
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs description
 @docs externalDocs

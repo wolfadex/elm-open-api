@@ -1,6 +1,5 @@
 module OpenApi.Parameter exposing
     ( Parameter
-    , Location
     , decode
     , allowEmptyValue
     , allowReserved
@@ -11,22 +10,26 @@ module OpenApi.Parameter exposing
     , examples
     , explode
     , in_
-    , location
     , name
     , required
     , schema
     , style
     )
 
-{-|
+{-| Corresponds to the [Parameter Object](https://spec.openapis.org/oas/latest#parameter-object) in the OpenAPI specification.
+
+
+# Types
 
 @docs Parameter
-@docs Location
+
+
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs allowEmptyValue
 @docs allowReserved
@@ -37,7 +40,7 @@ module OpenApi.Parameter exposing
 @docs examples
 @docs explode
 @docs in_
-@docs location
+
 @docs name
 @docs required
 @docs schema
@@ -57,11 +60,6 @@ type alias Parameter =
 
 
 {-| -}
-type alias Location =
-    OpenApi.Types.Location
-
-
-{-| -}
 decode : Decoder Parameter
 decode =
     OpenApi.Types.decodeParameter
@@ -73,10 +71,8 @@ name (Parameter parameter_) =
     parameter_.name
 
 
-{-| -}
-location : Parameter -> Location
-location (Parameter parameter_) =
-    parameter_.in_
+
+-- May want to refactor this in the future to have the Location (as I'm calling it) exposed to the user.
 
 
 {-| -}

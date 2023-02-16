@@ -10,17 +10,17 @@ module OpenApi.Example exposing
 {-| Corresponds to the [Example Object](https://spec.openapis.org/oas/latest.html#example-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs Example
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs description
 @docs externalValue

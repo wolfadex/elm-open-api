@@ -6,20 +6,20 @@ module OpenApi.RequestBody exposing
     , required
     )
 
-{-| Corresponds to the [RequestBody Object](https://spec.openapis.org/oas/latest.html#request-body-object) in the OpenAPI specification.
+{-| Corresponds to the [RequestBody Object](https://spec.openapis.org/oas/latest#request-body-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs RequestBody
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs content
 @docs description

@@ -9,17 +9,17 @@ module OpenApi.Server.Variable exposing
 {-| Corresponds to the [Server Variable Object](https://spec.openapis.org/oas/latest.html#server-variable-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs Variable
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs default
 @docs description

@@ -11,20 +11,20 @@ module OpenApi exposing
     , version
     )
 
-{-| Corresponds to the [OpenAPI Object](https://spec.openapis.org/oas/latest.html#openapi-object) in the OpenAPI specification.
+{-| Corresponds to the [OpenAPI Object](https://spec.openapis.org/oas/latest#openapi-object) in the OpenAPI specification.
 
 
-## Types
+# Types
 
 @docs OpenApi
 
 
-## Decoding
+# Decoding
 
 @docs decode
 
 
-## Querying
+# Querying
 
 @docs components
 @docs externalDocs
@@ -49,7 +49,8 @@ import OpenApi.Types exposing (Path, ReferenceOr, SecurityRequirement, Server)
 import Semver exposing (Version)
 
 
-{-| -}
+{-| An OpenAPI Specification (OAS)
+-}
 type OpenApi
     = OpenApi Internal
 
@@ -72,7 +73,7 @@ type alias Internal =
 -- Decoding
 
 
-{-| Decodes valid OpenAPI JSON
+{-| Decodes valid OpenAPI JSON v3.1
 -}
 decode : Decoder OpenApi
 decode =

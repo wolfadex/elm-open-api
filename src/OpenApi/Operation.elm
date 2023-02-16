@@ -15,9 +15,15 @@ module OpenApi.Operation exposing
     , tags
     )
 
-{-|
+{-| Corresponds to the [Operation Object](https://spec.openapis.org/oas/latest#operation-object) in the OpenAPI specification.
+
+
+# Types
 
 @docs Operation
+
+
+# Decoding
 
 @docs decode
 
