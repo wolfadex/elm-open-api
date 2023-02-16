@@ -1,15 +1,16 @@
 # `elm-open-api` [![Build Status](https://github.com/wolfadex/elm-open-api/workflows/CI/badge.svg)](https://github.com/wolfadex/elm-open-api/actions?query=branch%3Amain)
 
-Elm package for decoding and querying an [OpenAPI specification](https://www.openapis.org/).
+For decoding and querying an [OpenAPI specification](https://www.openapis.org/). OpenAPI specs can be generated from backend REST APIs.
 
-## Currently Supported Features
+## Currently Supported & In-Progress Features
 
 🚧 - Under construction
 
 🧪 - Basic testing done
 
 - Versions
-  - [ ] 3.0.x
+  - [ ] 2.y.z
+  - [ ] 3.0.z
   - [ ] 🚧 3.1.0
 - [ ] 🚧 Schema
   - [x] OpenAPI Object
@@ -45,8 +46,3 @@ Elm package for decoding and querying an [OpenAPI specification](https://www.ope
   - [x] 🧪 Security Requirement Object
   - [ ] 🚧 Specification Extensions
   - [ ] 🚧 Security Filtering
-
-## Checklist
-
-- [ ] Replace this with a nice readme (see this guide for designing Elm packages and writing nice docs/READMEs: <https://github.com/dillonkearns/idiomatic-elm-package-guide>)
-- [ ] Publish version 1.0.0 (you have to start at V1 with Elm packages). Run `elm publish` from the root folder of this repo when you're all ready, and it will walk you through the process!
