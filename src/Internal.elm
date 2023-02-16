@@ -1,9 +1,12 @@
 module Internal exposing
     ( andThen2
     , andThen3
+    , maybeEncodeField
+    , maybeEncodeListField
     )
 
 import Json.Decode exposing (Decoder)
+import Json.Encode
 
 
 andThen2 : (a -> b -> Decoder c) -> Decoder a -> Decoder b -> Decoder c
@@ -22,3 +25,23 @@ type Value a
     = Present a
     | Absent
     | Null
+
+
+maybeEncodeField : ( String, a -> Json.Encode.Value ) -> Maybe a -> Maybe ( String, Json.Encode.Value )
+maybeEncodeField ( name, encoder ) maybeVal =
+    case maybeVal of
+        Nothing ->
+            Nothing
+
+        Just val ->
+            Just ( name, encoder val )
+
+
+maybeEncodeListField : ( String, a -> Json.Encode.Value ) -> List a -> Maybe ( String, Json.Encode.Value )
+maybeEncodeListField ( name, encoder ) listVal =
+    case listVal of
+        [] ->
+            Nothing
+
+        _ ->
+            Just ( name, Json.Encode.list encoder listVal )

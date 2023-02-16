@@ -1,6 +1,7 @@
 module OpenApi.ExternalDocumentation exposing
     ( ExternalDocumentation
     , decode
+    , encode
     , description
     , url
     )
@@ -13,9 +14,10 @@ module OpenApi.ExternalDocumentation exposing
 @docs ExternalDocumentation
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -26,6 +28,7 @@ module OpenApi.ExternalDocumentation exposing
 -}
 
 import Json.Decode exposing (Decoder)
+import Json.Encode
 import OpenApi.Types exposing (ExternalDocumentation(..))
 
 
@@ -46,6 +49,12 @@ type alias ExternalDocumentation =
 decode : Decoder ExternalDocumentation
 decode =
     OpenApi.Types.decodeExternalDocumentation
+
+
+{-| -}
+encode : ExternalDocumentation -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeExternalDocumentation
 
 
 

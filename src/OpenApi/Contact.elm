@@ -1,6 +1,7 @@
 module OpenApi.Contact exposing
     ( Contact
     , decode
+    , encode
     , email
     , name
     , url
@@ -14,9 +15,10 @@ module OpenApi.Contact exposing
 @docs Contact
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -27,8 +29,10 @@ module OpenApi.Contact exposing
 
 -}
 
+import Internal
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
+import Json.Encode
 
 
 
@@ -65,6 +69,17 @@ decode =
         (Json.Decode.Extra.optionalField "name" Json.Decode.string)
         (Json.Decode.Extra.optionalField "url" Json.Decode.string)
         (Json.Decode.Extra.optionalField "email" Json.Decode.string)
+
+
+{-| -}
+encode : Contact -> Json.Encode.Value
+encode (Contact contact) =
+    [ Internal.maybeEncodeField ( "name", Json.Encode.string ) contact.name
+    , Internal.maybeEncodeField ( "url", Json.Encode.string ) contact.url
+    , Internal.maybeEncodeField ( "email", Json.Encode.string ) contact.email
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 

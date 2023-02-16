@@ -1,6 +1,7 @@
 module OpenApi.License exposing
     ( License
     , decode
+    , encode
     , identifier
     , name
     , url
@@ -14,9 +15,10 @@ module OpenApi.License exposing
 @docs License
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -30,6 +32,7 @@ module OpenApi.License exposing
 import Internal
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
+import Json.Encode
 
 
 
@@ -85,6 +88,24 @@ decode =
             (Json.Decode.Extra.optionalField "identifier" Json.Decode.string)
             (Json.Decode.Extra.optionalField "url" Json.Decode.string)
         )
+
+
+{-| -}
+encode : License -> Json.Encode.Value
+encode (License license) =
+    [ Just ( "name", Json.Encode.string license.name )
+    , case license.identifierOrUrl of
+        Nothing ->
+            Nothing
+
+        Just (JustIdentifier identifier_) ->
+            Just ( "identifier", Json.Encode.string identifier_ )
+
+        Just (JustUrl url_) ->
+            Just ( "url", Json.Encode.string url_ )
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 

@@ -1,6 +1,7 @@
 module OpenApi exposing
     ( OpenApi
     , decode
+    , encode
     , components
     , externalDocs
     , info
@@ -19,9 +20,10 @@ module OpenApi exposing
 @docs OpenApi
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -38,8 +40,10 @@ module OpenApi exposing
 -}
 
 import Dict exposing (Dict)
+import Internal
 import Json.Decode exposing (Decoder)
 import Json.Decode.Pipeline
+import Json.Encode
 import OpenApi.Components exposing (Components)
 import OpenApi.ExternalDocumentation exposing (ExternalDocumentation)
 import OpenApi.Info exposing (Info)
@@ -102,6 +106,24 @@ decode =
         |> Json.Decode.Pipeline.optional "paths" (Json.Decode.dict OpenApi.Types.decodePath) Dict.empty
         |> Json.Decode.Pipeline.optional "security" (Json.Decode.list OpenApi.Types.decodeSecurityRequirement) []
         |> Json.Decode.Pipeline.optional "webhooks" (Json.Decode.dict (OpenApi.Types.decodeRefOr OpenApi.Types.decodePath)) Dict.empty
+
+
+{-| -}
+encode : OpenApi -> Json.Encode.Value
+encode (OpenApi openApi) =
+    [ Just ( "openapi", Json.Encode.string (Semver.print openApi.version) )
+    , Just ( "info", OpenApi.Info.encode openApi.info )
+    , Internal.maybeEncodeField ( "jsonSchemaDialect", Json.Encode.string ) openApi.jsonSchemaDialect
+    , Internal.maybeEncodeField ( "externalDocs", OpenApi.ExternalDocumentation.encode ) openApi.externalDocs
+    , Internal.maybeEncodeListField ( "tags", OpenApi.Tag.encode ) openApi.tags
+    , ( "servers", Debug.todo "" )
+    , ( "components", Debug.todo "" )
+    , ( "paths", Debug.todo "" )
+    , ( "security", Debug.todo "" )
+    , ( "webhooks", Debug.todo "" )
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 decodeVersion : Decoder Version

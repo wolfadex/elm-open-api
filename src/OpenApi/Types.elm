@@ -61,6 +61,7 @@ module OpenApi.Types exposing
     , decodeServer
     , decodeServerVariable
     , decodeXml
+    , encodeExternalDocumentation
     , optionalNothing
     )
 
@@ -974,6 +975,15 @@ decodeExternalDocumentation =
         )
         (Json.Decode.Extra.optionalField "description" Json.Decode.string)
         (Json.Decode.field "url" Json.Decode.string)
+
+
+encodeExternalDocumentation : ExternalDocumentation -> Json.Encode.Value
+encodeExternalDocumentation (ExternalDocumentation externalDocs) =
+    [ Internal.maybeEncodeField ( "description", Json.Encode.string ) externalDocs.description
+    , Just ( "url", Json.Encode.string externalDocs.url )
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 
