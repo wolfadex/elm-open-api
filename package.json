@@ -4,16 +4,16 @@
   "description": "Elm package for OpenAPI",
   "devDependencies": {
     "elm-doc-preview": "^5.0.5",
-    "elm-review": "2.7.2",
-    "elm-test": "0.19.1-revision8",
-    "elm-tooling": "1.8.0",
+    "elm-review": "2.9.1",
+    "elm-test": "0.19.1-revision11",
+    "elm-tooling": "1.12.0",
     "elm-verify-examples": "5.2.0",
     "nodemon": "^2.0.18",
-    "prettier": "2.7.1"
+    "prettier": "2.8.4"
   },
   "scripts": {
     "test": "elm-verify-examples --run-tests && elm-test",
-    "test-watch": "elm-test-rs  --watch",
+    "test-watch": "elm-test  --watch",
     "postinstall": "elm-tooling install",
     "docs": "elm-doc-preview",
     "review": "elm-review --fix-all"
