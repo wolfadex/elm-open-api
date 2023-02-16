@@ -1,10 +1,10 @@
 module OpenApi.Parameter exposing
-    ( Location
-    , Parameter
+    ( Parameter
+    , Location
+    , decode
     , allowEmptyValue
     , allowReserved
     , content
-    , decode
     , deprecated
     , description
     , example
@@ -18,35 +18,68 @@ module OpenApi.Parameter exposing
     , style
     )
 
+{-|
+
+@docs Parameter
+@docs Location
+
+@docs decode
+
+
+## Querying
+
+@docs allowEmptyValue
+@docs allowReserved
+@docs content
+@docs deprecated
+@docs description
+@docs example
+@docs examples
+@docs explode
+@docs in_
+@docs location
+@docs name
+@docs required
+@docs schema
+@docs style
+
+-}
+
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
 import Json.Encode exposing (Value)
 import OpenApi.Types exposing (Example, Location(..), MediaType, Parameter(..), ReferenceOr, Schema)
 
 
+{-| -}
 type alias Parameter =
     OpenApi.Types.Parameter
 
 
+{-| -}
 type alias Location =
     OpenApi.Types.Location
 
 
+{-| -}
 decode : Decoder Parameter
 decode =
     OpenApi.Types.decodeParameter
 
 
+{-| -}
 name : Parameter -> String
 name (Parameter parameter_) =
     parameter_.name
 
 
+{-| -}
 location : Parameter -> Location
 location (Parameter parameter_) =
     parameter_.in_
 
 
+{-| -}
 in_ : Parameter -> String
 in_ (Parameter parameter_) =
     case parameter_.in_ of
@@ -63,6 +96,7 @@ in_ (Parameter parameter_) =
             "cookie"
 
 
+{-| -}
 style : Parameter -> String
 style (Parameter parameter_) =
     case parameter_.in_ of
@@ -79,6 +113,7 @@ style (Parameter parameter_) =
             details.style
 
 
+{-| -}
 explode : Parameter -> Bool
 explode (Parameter parameter_) =
     case parameter_.in_ of
@@ -95,6 +130,7 @@ explode (Parameter parameter_) =
             details.explode
 
 
+{-| -}
 allowReserved : Parameter -> Maybe Bool
 allowReserved (Parameter parameter_) =
     case parameter_.in_ of
@@ -111,41 +147,49 @@ allowReserved (Parameter parameter_) =
             Nothing
 
 
+{-| -}
 description : Parameter -> Maybe String
 description (Parameter parameter_) =
     parameter_.description
 
 
+{-| -}
 required : Parameter -> Bool
 required (Parameter parameter_) =
     parameter_.required
 
 
+{-| -}
 deprecated : Parameter -> Bool
 deprecated (Parameter parameter_) =
     parameter_.deprecated
 
 
+{-| -}
 allowEmptyValue : Parameter -> Bool
 allowEmptyValue (Parameter parameter_) =
     parameter_.allowEmptyValue
 
 
+{-| -}
 schema : Parameter -> Maybe Schema
 schema (Parameter parameter_) =
     parameter_.schema
 
 
+{-| -}
 content : Parameter -> Dict String MediaType
 content (Parameter parameter_) =
     parameter_.content
 
 
+{-| -}
 example : Parameter -> Maybe Value
 example (Parameter parameter_) =
     parameter_.example
 
 
+{-| -}
 examples : Parameter -> Dict String (ReferenceOr Example)
 examples (Parameter parameter_) =
     parameter_.examples

@@ -5,10 +5,10 @@ module OpenApi exposing
     , externalDocs
     , info
     , jsonSchemaDialect
+    , paths
     , servers
     , tags
     , version
-    , paths
     )
 
 {-| Corresponds to the [OpenAPI Object](https://spec.openapis.org/oas/latest.html#openapi-object) in the OpenAPI specification.
@@ -30,6 +30,7 @@ module OpenApi exposing
 @docs externalDocs
 @docs info
 @docs jsonSchemaDialect
+@docs paths
 @docs servers
 @docs tags
 @docs version
