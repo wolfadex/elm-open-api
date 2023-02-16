@@ -1,10 +1,12 @@
 module Internal exposing
     ( andThen2
     , andThen3
+    , maybeEncodeDictField
     , maybeEncodeField
     , maybeEncodeListField
     )
 
+import Dict
 import Json.Decode exposing (Decoder)
 import Json.Encode
 
@@ -45,3 +47,12 @@ maybeEncodeListField ( name, encoder ) listVal =
 
         _ ->
             Just ( name, Json.Encode.list encoder listVal )
+
+
+maybeEncodeDictField : ( String, k -> String, v -> Json.Encode.Value ) -> Dict.Dict k v -> Maybe ( String, Json.Encode.Value )
+maybeEncodeDictField ( name, keyToString, encoder ) dictVal =
+    if Dict.isEmpty dictVal then
+        Nothing
+
+    else
+        Just ( name, Json.Encode.dict keyToString encoder dictVal )

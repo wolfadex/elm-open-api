@@ -77,7 +77,7 @@ type alias Internal =
 -- Decoding
 
 
-{-| Decodes valid OpenAPI JSON v3.1
+{-| Decodes OpenAPI JSON v3.1
 -}
 decode : Decoder OpenApi
 decode =
@@ -108,7 +108,8 @@ decode =
         |> Json.Decode.Pipeline.optional "webhooks" (Json.Decode.dict (OpenApi.Types.decodeRefOr OpenApi.Types.decodePath)) Dict.empty
 
 
-{-| -}
+{-| Encodes to OpenAPI JSON v3.1
+-}
 encode : OpenApi -> Json.Encode.Value
 encode (OpenApi openApi) =
     [ Just ( "openapi", Json.Encode.string (Semver.print openApi.version) )
@@ -116,11 +117,11 @@ encode (OpenApi openApi) =
     , Internal.maybeEncodeField ( "jsonSchemaDialect", Json.Encode.string ) openApi.jsonSchemaDialect
     , Internal.maybeEncodeField ( "externalDocs", OpenApi.ExternalDocumentation.encode ) openApi.externalDocs
     , Internal.maybeEncodeListField ( "tags", OpenApi.Tag.encode ) openApi.tags
-    , ( "servers", Debug.todo "" )
-    , ( "components", Debug.todo "" )
-    , ( "paths", Debug.todo "" )
-    , ( "security", Debug.todo "" )
-    , ( "webhooks", Debug.todo "" )
+    , Internal.maybeEncodeListField ( "servers", OpenApi.Server.encode ) openApi.servers
+    , Debug.todo "" --( "components", Debug.todo "" )
+    , Internal.maybeEncodeDictField ( "paths", identity, OpenApi.Types.encodePath ) openApi.paths
+    , Internal.maybeEncodeListField ( "security", OpenApi.Types.encodeSecurityRequirement ) openApi.security
+    , Internal.maybeEncodeDictField ( "webhooks", identity, OpenApi.Types.encodeRefOr OpenApi.Types.encodePath ) openApi.webhooks
     ]
         |> List.filterMap identity
         |> Json.Encode.object
