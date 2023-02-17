@@ -1,6 +1,7 @@
 module OpenApi.Operation exposing
     ( Operation
     , decode
+    , encode
     , callbacks
     , deprecated
     , description
@@ -23,9 +24,10 @@ module OpenApi.Operation exposing
 @docs Operation
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 ## Querying
@@ -47,6 +49,7 @@ module OpenApi.Operation exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
+import Json.Encode
 import OpenApi.ExternalDocumentation exposing (ExternalDocumentation)
 import OpenApi.Reference exposing (ReferenceOr)
 import OpenApi.RequestBody exposing (RequestBody)
@@ -64,6 +67,12 @@ type alias Operation =
 decode : Decoder Operation
 decode =
     OpenApi.Types.decodeOperation
+
+
+{-| -}
+encode : Operation -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeOperation
 
 
 {-| -}

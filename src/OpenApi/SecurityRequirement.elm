@@ -1,6 +1,7 @@
 module OpenApi.SecurityRequirement exposing
     ( SecurityRequirement
     , decode
+    , encode
     , requirements
     )
 
@@ -12,9 +13,10 @@ module OpenApi.SecurityRequirement exposing
 @docs SecurityRequirement
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -25,6 +27,7 @@ module OpenApi.SecurityRequirement exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
+import Json.Encode
 import OpenApi.Types exposing (SecurityRequirement(..))
 
 
@@ -37,6 +40,12 @@ type alias SecurityRequirement =
 decode : Decoder SecurityRequirement
 decode =
     OpenApi.Types.decodeSecurityRequirement
+
+
+{-| -}
+encode : SecurityRequirement -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeSecurityRequirement
 
 
 {-| -}

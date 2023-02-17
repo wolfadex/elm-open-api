@@ -1,6 +1,7 @@
 module OpenApi.Parameter exposing
     ( Parameter
     , decode
+    , encode
     , allowEmptyValue
     , allowReserved
     , content
@@ -24,9 +25,10 @@ module OpenApi.Parameter exposing
 @docs Parameter
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -63,6 +65,12 @@ type alias Parameter =
 decode : Decoder Parameter
 decode =
     OpenApi.Types.decodeParameter
+
+
+{-| -}
+encode : Parameter -> Value
+encode =
+    OpenApi.Types.encodeParameter
 
 
 {-| -}

@@ -118,7 +118,7 @@ encode (OpenApi openApi) =
     , Internal.maybeEncodeField ( "externalDocs", OpenApi.ExternalDocumentation.encode ) openApi.externalDocs
     , Internal.maybeEncodeListField ( "tags", OpenApi.Tag.encode ) openApi.tags
     , Internal.maybeEncodeListField ( "servers", OpenApi.Server.encode ) openApi.servers
-    , Debug.todo "" --( "components", Debug.todo "" )
+    , Internal.maybeEncodeField ( "components", OpenApi.Components.encode ) openApi.components
     , Internal.maybeEncodeDictField ( "paths", identity, OpenApi.Types.encodePath ) openApi.paths
     , Internal.maybeEncodeListField ( "security", OpenApi.Types.encodeSecurityRequirement ) openApi.security
     , Internal.maybeEncodeDictField ( "webhooks", identity, OpenApi.Types.encodeRefOr OpenApi.Types.encodePath ) openApi.webhooks

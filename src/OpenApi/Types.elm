@@ -61,12 +61,26 @@ module OpenApi.Types exposing
     , decodeServer
     , decodeServerVariable
     , decodeXml
+    , encodeCallback
+    , encodeDiscriminator
+    , encodeEncoding
+    , encodeExample
     , encodeExternalDocumentation
+    , encodeHeader
+    , encodeLink
+    , encodeMediaType
+    , encodeOperation
+    , encodeParameter
     , encodePath
     , encodeRefOr
+    , encodeReference
+    , encodeRequestBody
+    , encodeResponse
+    , encodeSchema
     , encodeSecurityRequirement
     , encodeServer
     , encodeServerVariable
+    , encodeXml
     , optionalNothing
     )
 
@@ -165,6 +179,16 @@ decodeReference =
         (Json.Decode.Extra.optionalField "description" Json.Decode.string)
 
 
+encodeReference : Reference -> Json.Encode.Value
+encodeReference (Reference reference) =
+    [ Just ( "$ref", Json.Encode.string reference.ref )
+    , Internal.maybeEncodeField ( "summary", Json.Encode.string ) reference.summary
+    , Internal.maybeEncodeField ( "description", Json.Encode.string ) reference.description
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
+
+
 decodeRefOr : Decoder a -> Decoder (ReferenceOr a)
 decodeRefOr decoder =
     Json.Decode.oneOf
@@ -176,13 +200,8 @@ decodeRefOr decoder =
 encodeRefOr : (a -> Json.Encode.Value) -> ReferenceOr a -> Json.Encode.Value
 encodeRefOr encoder refOr =
     case refOr of
-        Ref (Reference reference) ->
-            [ Just ( "$ref", Json.Encode.string reference.ref )
-            , Internal.maybeEncodeField ( "summary", Json.Encode.string ) reference.summary
-            , Internal.maybeEncodeField ( "description", Json.Encode.string ) reference.description
-            ]
-                |> List.filterMap identity
-                |> Json.Encode.object
+        Ref reference ->
+            encodeReference reference
 
         Other a ->
             encoder a
@@ -539,6 +558,14 @@ decodeDiscriminator =
         (Json.Decode.field "mapping" (Json.Decode.dict Json.Decode.string))
 
 
+encodeDiscriminator : Discriminator -> Json.Encode.Value
+encodeDiscriminator (Discriminator discriminator) =
+    Json.Encode.object
+        [ ( "propertyName", Json.Encode.string discriminator.propertyName )
+        , ( "mapping", Json.Encode.dict identity Json.Encode.string discriminator.mapping )
+        ]
+
+
 
 -- Xml
 
@@ -571,12 +598,24 @@ decodeXml =
         (Json.Decode.Extra.optionalField "name" Json.Decode.string)
         (Json.Decode.Extra.optionalField "namespace" Json.Decode.string)
         (Json.Decode.Extra.optionalField "prefix" Json.Decode.string)
-        (Json.Decode.maybe (Json.Decode.field "name" Json.Decode.bool)
+        (Json.Decode.maybe (Json.Decode.field "attribute" Json.Decode.bool)
             |> Json.Decode.map (Maybe.withDefault False)
         )
-        (Json.Decode.maybe (Json.Decode.field "name" Json.Decode.bool)
+        (Json.Decode.maybe (Json.Decode.field "wrapped" Json.Decode.bool)
             |> Json.Decode.map (Maybe.withDefault False)
         )
+
+
+encodeXml : Xml -> Json.Encode.Value
+encodeXml (Xml xml) =
+    [ Internal.maybeEncodeField ( "name", Json.Encode.string ) xml.name
+    , Internal.maybeEncodeField ( "namespace", Json.Encode.string ) xml.namespace
+    , Internal.maybeEncodeField ( "prefix", Json.Encode.string ) xml.prefix
+    , Just ( "attribute", Json.Encode.bool xml.attribute )
+    , Just ( "wrapped", Json.Encode.bool xml.wrapped )
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 

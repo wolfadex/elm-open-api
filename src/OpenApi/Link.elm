@@ -1,6 +1,7 @@
 module OpenApi.Link exposing
     ( Link
     , decode
+    , encode
     , description
     , operationId
     , operationRef
@@ -17,9 +18,10 @@ module OpenApi.Link exposing
 @docs Link
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -55,6 +57,12 @@ type alias Link =
 decode : Decoder Link
 decode =
     OpenApi.Types.decodeLink
+
+
+{-| -}
+encode : Link -> Value
+encode =
+    OpenApi.Types.encodeLink
 
 
 

@@ -1,6 +1,7 @@
 module OpenApi.Example exposing
     ( Example
     , decode
+    , encode
     , description
     , externalValue
     , summary
@@ -15,9 +16,10 @@ module OpenApi.Example exposing
 @docs Example
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -29,7 +31,8 @@ module OpenApi.Example exposing
 
 -}
 
-import Json.Decode exposing (Decoder, Value)
+import Json.Decode
+import Json.Encode
 import OpenApi.Types exposing (Example(..))
 
 
@@ -47,9 +50,15 @@ type alias Example =
 
 
 {-| -}
-decode : Decoder Example
+decode : Json.Decode.Decoder Example
 decode =
     OpenApi.Types.decodeExample
+
+
+{-| -}
+encode : Example -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeExample
 
 
 
@@ -69,7 +78,7 @@ description (Example example) =
 
 
 {-| -}
-value : Example -> Maybe Value
+value : Example -> Maybe Json.Encode.Value
 value (Example example) =
     example.value
 

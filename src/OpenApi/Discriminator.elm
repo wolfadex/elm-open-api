@@ -1,6 +1,7 @@
 module OpenApi.Discriminator exposing
     ( Discriminator
     , decode
+    , encode
     , propertyName
     , mapping
     )
@@ -13,9 +14,10 @@ module OpenApi.Discriminator exposing
 @docs Discriminator
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -27,6 +29,7 @@ module OpenApi.Discriminator exposing
 
 import Dict
 import Json.Decode
+import Json.Encode
 import OpenApi.Types
 
 
@@ -39,6 +42,12 @@ type alias Discriminator =
 decode : Json.Decode.Decoder Discriminator
 decode =
     OpenApi.Types.decodeDiscriminator
+
+
+{-| -}
+encode : Discriminator -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeDiscriminator
 
 
 {-| -}

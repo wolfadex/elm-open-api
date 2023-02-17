@@ -3,6 +3,7 @@ module OpenApi.SecurityScheme exposing
     , SecuritySchemeType(..)
     , SecuritySchemeIn(..)
     , decode
+    , encode
     , description
     , type_
     )
@@ -17,9 +18,10 @@ module OpenApi.SecurityScheme exposing
 @docs SecuritySchemeIn
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -31,6 +33,7 @@ module OpenApi.SecurityScheme exposing
 
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
+import Json.Encode
 import OpenApi.OauthFlow exposing (OauthFlows)
 
 
@@ -81,6 +84,12 @@ decode =
         )
         decodeType
         (Json.Decode.Extra.optionalField "description" Json.Decode.string)
+
+
+{-| -}
+encode : SecurityScheme -> Json.Encode.Value
+encode (SecurityScheme securityScheme) =
+    Debug.todo ""
 
 
 decodeType : Decoder SecuritySchemeType

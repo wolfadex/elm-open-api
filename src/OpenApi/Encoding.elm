@@ -1,6 +1,7 @@
 module OpenApi.Encoding exposing
     ( Encoding
     , decode
+    , encode
     , allowReserved
     , contentType
     , explode
@@ -16,9 +17,10 @@ module OpenApi.Encoding exposing
 @docs Encoding
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -33,6 +35,7 @@ module OpenApi.Encoding exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
+import Json.Encode
 import OpenApi.Types exposing (Encoding(..), Header, ReferenceOr)
 
 
@@ -53,6 +56,12 @@ type alias Encoding =
 decode : Decoder Encoding
 decode =
     OpenApi.Types.decodeEncoding
+
+
+{-| -}
+encode : Encoding -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeEncoding
 
 
 

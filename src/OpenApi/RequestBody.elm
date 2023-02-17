@@ -1,6 +1,7 @@
 module OpenApi.RequestBody exposing
     ( RequestBody
     , decode
+    , encode
     , content
     , description
     , required
@@ -14,9 +15,10 @@ module OpenApi.RequestBody exposing
 @docs RequestBody
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -29,6 +31,7 @@ module OpenApi.RequestBody exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
+import Json.Encode
 import OpenApi.MediaType exposing (MediaType)
 import OpenApi.Types exposing (RequestBody(..))
 
@@ -50,6 +53,12 @@ type alias RequestBody =
 decode : Decoder RequestBody
 decode =
     OpenApi.Types.decodeRequestBody
+
+
+{-| -}
+encode : RequestBody -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeRequestBody
 
 
 

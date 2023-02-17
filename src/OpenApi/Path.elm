@@ -1,6 +1,7 @@
 module OpenApi.Path exposing
     ( Path
     , decode
+    , encode
     , delete
     , description
     , get
@@ -23,9 +24,10 @@ module OpenApi.Path exposing
 @docs Path
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -46,6 +48,7 @@ module OpenApi.Path exposing
 -}
 
 import Json.Decode exposing (Decoder)
+import Json.Encode
 import OpenApi.Types exposing (Operation, Parameter, Path(..), ReferenceOr, Server)
 
 
@@ -58,6 +61,12 @@ type alias Path =
 decode : Decoder Path
 decode =
     OpenApi.Types.decodePath
+
+
+{-| -}
+encode : Path -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodePath
 
 
 {-| -}

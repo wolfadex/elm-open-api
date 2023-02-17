@@ -1,6 +1,7 @@
 module OpenApi.Response exposing
     ( Response
     , decode
+    , encode
     , content
     , description
     , headers
@@ -15,9 +16,10 @@ module OpenApi.Response exposing
 @docs Response
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -31,6 +33,7 @@ module OpenApi.Response exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
+import Json.Encode
 import OpenApi.Link exposing (Link)
 import OpenApi.MediaType exposing (MediaType)
 import OpenApi.Types exposing (Header, ReferenceOr(..), Response(..))
@@ -45,6 +48,12 @@ type alias Response =
 decode : Decoder Response
 decode =
     OpenApi.Types.decodeResponse
+
+
+{-| -}
+encode : Response -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeResponse
 
 
 {-| -}
