@@ -3,6 +3,8 @@ module OpenApi.Reference exposing
     , ReferenceOr
     , decode
     , encode
+    , toConcrete
+    , toReference
     , description
     , ref
     , summary
@@ -25,6 +27,9 @@ module OpenApi.Reference exposing
 
 # Querying
 
+@docs toConcrete
+
+@docs toReference
 @docs description
 @docs ref
 @docs summary
@@ -46,6 +51,12 @@ This type is a wrapper around the possibility of the value being either of these
 -}
 type alias ReferenceOr a =
     OpenApi.Types.ReferenceOr a
+
+
+
+-- type ReferenceOr a
+--     = Ref Reference
+--     | Concrete a
 
 
 {-| -}
@@ -77,3 +88,25 @@ ref (Reference reference) =
 summary : Reference -> Maybe String
 summary (Reference reference) =
     reference.summary
+
+
+{-| -}
+toReference : ReferenceOr a -> Maybe Reference
+toReference refOr =
+    case refOr of
+        OpenApi.Types.Ref reference ->
+            Just reference
+
+        OpenApi.Types.Other _ ->
+            Nothing
+
+
+{-| -}
+toConcrete : ReferenceOr a -> Maybe a
+toConcrete refOr =
+    case refOr of
+        OpenApi.Types.Ref _ ->
+            Nothing
+
+        OpenApi.Types.Other a ->
+            Just a
