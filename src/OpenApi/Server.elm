@@ -1,6 +1,7 @@
 module OpenApi.Server exposing
     ( Server
     , decode
+    , encode
     , description
     , url
     , variables
@@ -14,9 +15,10 @@ module OpenApi.Server exposing
 @docs Server
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -29,6 +31,7 @@ module OpenApi.Server exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder)
+import Json.Encode
 import OpenApi.Server.Variable exposing (Variable)
 import OpenApi.Types exposing (Server(..))
 
@@ -50,6 +53,12 @@ type alias Server =
 decode : Decoder Server
 decode =
     OpenApi.Types.decodeServer
+
+
+{-| -}
+encode : Server -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeServer
 
 
 

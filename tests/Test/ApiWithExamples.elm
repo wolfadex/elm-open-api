@@ -1,9 +1,7 @@
 module Test.ApiWithExamples exposing (suite)
 
-import Expect exposing (Expectation)
-import Fuzz exposing (Fuzzer)
-import Html exposing (a)
-import Json.Decode exposing (Error(..))
+import Expect
+import Json.Decode
 import OpenApi
 import Semver
 import Test exposing (..)

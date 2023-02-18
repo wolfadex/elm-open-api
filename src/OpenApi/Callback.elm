@@ -1,6 +1,7 @@
 module OpenApi.Callback exposing
     ( Callback
     , decode
+    , encode
     , expression
     , value
     )
@@ -13,9 +14,10 @@ module OpenApi.Callback exposing
 @docs Callback
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -26,6 +28,7 @@ module OpenApi.Callback exposing
 -}
 
 import Json.Decode exposing (Decoder)
+import Json.Encode
 import OpenApi.Types exposing (Callback(..), Path, ReferenceOr)
 
 
@@ -38,6 +41,12 @@ type alias Callback =
 decode : Decoder Callback
 decode =
     OpenApi.Types.decodeCallback
+
+
+{-| -}
+encode : Callback -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeCallback
 
 
 {-| -}

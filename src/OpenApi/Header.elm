@@ -1,6 +1,7 @@
 module OpenApi.Header exposing
     ( Header
     , decode
+    , encode
     , allowEmptyValue
     , content
     , deprecated
@@ -21,9 +22,10 @@ module OpenApi.Header exposing
 @docs Header
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -42,8 +44,8 @@ module OpenApi.Header exposing
 -}
 
 import Dict exposing (Dict)
-import Json.Decode exposing (Decoder)
-import Json.Encode exposing (Value)
+import Json.Decode
+import Json.Encode
 import OpenApi.Example exposing (Example)
 import OpenApi.Types exposing (Header(..), MediaType, ReferenceOr, Schema)
 
@@ -54,9 +56,15 @@ type alias Header =
 
 
 {-| -}
-decode : Decoder Header
+decode : Json.Decode.Decoder Header
 decode =
     OpenApi.Types.decodeHeader
+
+
+{-| -}
+encode : Header -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeHeader
 
 
 {-| -}
@@ -108,7 +116,7 @@ content (Header header) =
 
 
 {-| -}
-example : Header -> Maybe Value
+example : Header -> Maybe Json.Encode.Value
 example (Header header) =
     header.example
 

@@ -1,6 +1,7 @@
 module OpenApi.Components exposing
     ( Components
     , decode
+    , encode
     , callbacks
     , examples
     , headers
@@ -21,9 +22,10 @@ module OpenApi.Components exposing
 @docs Components
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -42,7 +44,9 @@ module OpenApi.Components exposing
 -}
 
 import Dict exposing (Dict)
+import Internal
 import Json.Decode exposing (Decoder)
+import Json.Encode
 import OpenApi.SecurityScheme exposing (SecurityScheme)
 import OpenApi.Types
     exposing
@@ -52,8 +56,8 @@ import OpenApi.Types
         , Link
         , Parameter
         , Path
-        , ReferenceOr(..)
-        , RequestBody(..)
+        , ReferenceOr
+        , RequestBody
         , Response
         , Schema
         )
@@ -114,6 +118,24 @@ decode =
         |> OpenApi.Types.decodeOptionalDict "links" (OpenApi.Types.decodeRefOr OpenApi.Types.decodeLink)
         |> OpenApi.Types.decodeOptionalDict "callbacks" (OpenApi.Types.decodeRefOr OpenApi.Types.decodeCallback)
         |> OpenApi.Types.decodeOptionalDict "pathItems" (OpenApi.Types.decodeRefOr OpenApi.Types.decodePath)
+
+
+{-| -}
+encode : Components -> Json.Encode.Value
+encode (Components components) =
+    [ Internal.maybeEncodeDictField ( "schemas", identity, OpenApi.Types.encodeSchema ) components.schemas
+    , Internal.maybeEncodeDictField ( "responses", identity, OpenApi.Types.encodeRefOr OpenApi.Types.encodeResponse ) components.responses
+    , Internal.maybeEncodeDictField ( "parameters", identity, OpenApi.Types.encodeRefOr OpenApi.Types.encodeParameter ) components.parameters
+    , Internal.maybeEncodeDictField ( "examples", identity, OpenApi.Types.encodeRefOr OpenApi.Types.encodeExample ) components.examples
+    , Internal.maybeEncodeDictField ( "requestBodies", identity, OpenApi.Types.encodeRefOr OpenApi.Types.encodeRequestBody ) components.requestBodies
+    , Internal.maybeEncodeDictField ( "headers", identity, OpenApi.Types.encodeRefOr OpenApi.Types.encodeHeader ) components.headers
+    , Internal.maybeEncodeDictField ( "securitySchemes", identity, OpenApi.Types.encodeRefOr OpenApi.SecurityScheme.encode ) components.securitySchemes
+    , Internal.maybeEncodeDictField ( "links", identity, OpenApi.Types.encodeRefOr OpenApi.Types.encodeLink ) components.links
+    , Internal.maybeEncodeDictField ( "callbacks", identity, OpenApi.Types.encodeRefOr OpenApi.Types.encodeCallback ) components.callbacks
+    , Internal.maybeEncodeDictField ( "pathItems", identity, OpenApi.Types.encodeRefOr OpenApi.Types.encodePath ) components.pathItems
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 

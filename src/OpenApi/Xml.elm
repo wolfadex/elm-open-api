@@ -1,6 +1,7 @@
 module OpenApi.Xml exposing
     ( Xml
     , decode
+    , encode
     , attribute
     , name
     , namespace
@@ -16,9 +17,10 @@ module OpenApi.Xml exposing
 @docs Xml
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -32,6 +34,7 @@ module OpenApi.Xml exposing
 -}
 
 import Json.Decode exposing (Decoder)
+import Json.Encode
 import OpenApi.Types exposing (Xml)
 
 
@@ -44,6 +47,12 @@ type alias Xml =
 decode : Decoder Xml
 decode =
     OpenApi.Types.decodeXml
+
+
+{-| -}
+encode : Xml -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeXml
 
 
 {-| -}

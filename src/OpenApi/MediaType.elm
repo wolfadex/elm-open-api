@@ -1,6 +1,7 @@
 module OpenApi.MediaType exposing
     ( MediaType
     , decode
+    , encode
     , encoding
     , example
     , examples
@@ -15,9 +16,10 @@ module OpenApi.MediaType exposing
 @docs MediaType
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -31,6 +33,7 @@ module OpenApi.MediaType exposing
 
 import Dict exposing (Dict)
 import Json.Decode exposing (Decoder, Value)
+import Json.Encode
 import OpenApi.Schema exposing (Schema)
 import OpenApi.Types exposing (Encoding, Example, MediaType(..), ReferenceOr)
 
@@ -52,6 +55,12 @@ type alias MediaType =
 decode : Decoder MediaType
 decode =
     OpenApi.Types.decodeMediaType
+
+
+{-| -}
+encode : MediaType -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeMediaType
 
 
 

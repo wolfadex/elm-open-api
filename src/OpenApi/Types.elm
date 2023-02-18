@@ -61,6 +61,26 @@ module OpenApi.Types exposing
     , decodeServer
     , decodeServerVariable
     , decodeXml
+    , encodeCallback
+    , encodeDiscriminator
+    , encodeEncoding
+    , encodeExample
+    , encodeExternalDocumentation
+    , encodeHeader
+    , encodeLink
+    , encodeMediaType
+    , encodeOperation
+    , encodeParameter
+    , encodePath
+    , encodeRefOr
+    , encodeReference
+    , encodeRequestBody
+    , encodeResponse
+    , encodeSchema
+    , encodeSecurityRequirement
+    , encodeServer
+    , encodeServerVariable
+    , encodeXml
     , optionalNothing
     )
 
@@ -112,6 +132,18 @@ decodeEncoding =
         (Json.Decode.Extra.optionalField "allowReserved" Json.Decode.bool)
 
 
+encodeEncoding : Encoding -> Json.Encode.Value
+encodeEncoding (Encoding encoding) =
+    [ Internal.maybeEncodeField ( "contentType", Json.Encode.string ) encoding.contentType
+    , Internal.maybeEncodeDictField ( "headers", identity, encodeRefOr encodeHeader ) encoding.headers
+    , Internal.maybeEncodeField ( "style", Json.Encode.string ) encoding.style
+    , Just ( "explode", Json.Encode.bool encoding.explode )
+    , Just ( "allowReserved", Json.Encode.bool encoding.allowReserved )
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
+
+
 
 -- Reference
 
@@ -147,12 +179,32 @@ decodeReference =
         (Json.Decode.Extra.optionalField "description" Json.Decode.string)
 
 
+encodeReference : Reference -> Json.Encode.Value
+encodeReference (Reference reference) =
+    [ Just ( "$ref", Json.Encode.string reference.ref )
+    , Internal.maybeEncodeField ( "summary", Json.Encode.string ) reference.summary
+    , Internal.maybeEncodeField ( "description", Json.Encode.string ) reference.description
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
+
+
 decodeRefOr : Decoder a -> Decoder (ReferenceOr a)
 decodeRefOr decoder =
     Json.Decode.oneOf
         [ Json.Decode.map Ref decodeReference
         , Json.Decode.map Other decoder
         ]
+
+
+encodeRefOr : (a -> Json.Encode.Value) -> ReferenceOr a -> Json.Encode.Value
+encodeRefOr encoder refOr =
+    case refOr of
+        Ref reference ->
+            encodeReference reference
+
+        Other a ->
+            encoder a
 
 
 
@@ -220,6 +272,23 @@ decodeParameter =
         |> Json.Decode.Pipeline.optional "examples" (Json.Decode.dict (decodeRefOr decodeExample)) Dict.empty
 
 
+encodeParameter : Parameter -> Json.Encode.Value
+encodeParameter (Parameter parameter) =
+    [ Just ( "name", Json.Encode.string parameter.name )
+    , Internal.maybeEncodeField ( "description", Json.Encode.string ) parameter.description
+    , Just ( "deprecated", Json.Encode.bool parameter.deprecated )
+    , Just ( "required", Json.Encode.bool parameter.required )
+    , Just ( "allowEmptyValue", Json.Encode.bool parameter.allowEmptyValue )
+    , Internal.maybeEncodeField ( "schema", encodeSchema ) parameter.schema
+    , Internal.maybeEncodeDictField ( "content", identity, encodeMediaType ) parameter.content
+    , Internal.maybeEncodeField ( "example", identity ) parameter.example
+    , Internal.maybeEncodeDictField ( "examples", identity, encodeRefOr encodeExample ) parameter.examples
+    ]
+        |> List.filterMap identity
+        |> List.append (encodeLocation parameter.in_)
+        |> Json.Encode.object
+
+
 decodeLocation : Decoder ( Location, Bool )
 decodeLocation =
     Json.Decode.field "in" Json.Decode.string
@@ -241,6 +310,35 @@ decodeLocation =
                     _ ->
                         Json.Decode.fail ("Unknown location `in` of " ++ in_)
             )
+
+
+encodeLocation : Location -> List ( String, Json.Encode.Value )
+encodeLocation location =
+    case location of
+        LocQuery { style, explode, allowReserved } ->
+            [ ( "in", Json.Encode.string "query" )
+            , ( "style", Json.Encode.string style )
+            , ( "explode", Json.Encode.bool explode )
+            , ( "allowReserved", Json.Encode.bool allowReserved )
+            ]
+
+        LocHeader { style, explode } ->
+            [ ( "in", Json.Encode.string "header" )
+            , ( "style", Json.Encode.string style )
+            , ( "explode", Json.Encode.bool explode )
+            ]
+
+        LocPath { style, explode } ->
+            [ ( "in", Json.Encode.string "path" )
+            , ( "style", Json.Encode.string style )
+            , ( "explode", Json.Encode.bool explode )
+            ]
+
+        LocCookie { style, explode } ->
+            [ ( "in", Json.Encode.string "cookie" )
+            , ( "style", Json.Encode.string style )
+            , ( "explode", Json.Encode.bool explode )
+            ]
 
 
 decodeQuery : Decoder ( Location, Bool )
@@ -393,6 +491,23 @@ decodeHeader =
         |> Json.Decode.Pipeline.optional "examples" (Json.Decode.dict (decodeRefOr decodeExample)) Dict.empty
 
 
+encodeHeader : Header -> Json.Encode.Value
+encodeHeader (Header header) =
+    [ Internal.maybeEncodeField ( "style", Json.Encode.string ) header.style
+    , Just ( "explode", Json.Encode.bool header.explode )
+    , Internal.maybeEncodeField ( "description", Json.Encode.string ) header.description
+    , Just ( "required", Json.Encode.bool header.required )
+    , Just ( "deprecated", Json.Encode.bool header.deprecated )
+    , Just ( "allowEmptyValue", Json.Encode.bool header.allowEmptyValue )
+    , Internal.maybeEncodeField ( "schema", encodeSchema ) header.schema
+    , Internal.maybeEncodeDictField ( "content", identity, encodeMediaType ) header.content
+    , Internal.maybeEncodeField ( "example", identity ) header.example
+    , Internal.maybeEncodeDictField ( "examples", identity, encodeRefOr encodeExample ) header.examples
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
+
+
 
 -- Schema
 
@@ -402,33 +517,18 @@ type Schema
 
 
 type alias SchemaInternal =
-    -- { discriminator : Maybe Discriminator
-    -- , xml : Maybe Xml
-    -- , externalDocs : Maybe ExternalDocumentation
-    -- , example : Maybe Value
-    -- }
-    -- Value
     Json.Schema.Definitions.Schema
 
 
 decodeSchema : Decoder Schema
 decodeSchema =
-    -- Json.Decode.map4
-    --     (\discriminator xml externalDocs example ->
-    --         Schema
-    --             { discriminator = discriminator
-    --             , xml = xml
-    --             , externalDocs = externalDocs
-    --             , example = example
-    --             }
-    --     )
-    --     (Json.Decode.Extra.optionalField "discriminator" decodeDiscriminator)
-    --     (Json.Decode.Extra.optionalField "xml" decodeXml)
-    --     (Json.Decode.Extra.optionalField "externalDocs" decodeExternalDocumentation)
-    --     (Json.Decode.Extra.optionalField "example" Json.Decode.value)
     Json.Decode.map Schema
-        -- Json.Decode.value
         Json.Schema.Definitions.decoder
+
+
+encodeSchema : Schema -> Json.Encode.Value
+encodeSchema (Schema schema) =
+    Json.Schema.Definitions.encode schema
 
 
 
@@ -456,6 +556,14 @@ decodeDiscriminator =
         )
         (Json.Decode.field "propertyName" Json.Decode.string)
         (Json.Decode.field "mapping" (Json.Decode.dict Json.Decode.string))
+
+
+encodeDiscriminator : Discriminator -> Json.Encode.Value
+encodeDiscriminator (Discriminator discriminator) =
+    Json.Encode.object
+        [ ( "propertyName", Json.Encode.string discriminator.propertyName )
+        , ( "mapping", Json.Encode.dict identity Json.Encode.string discriminator.mapping )
+        ]
 
 
 
@@ -490,12 +598,24 @@ decodeXml =
         (Json.Decode.Extra.optionalField "name" Json.Decode.string)
         (Json.Decode.Extra.optionalField "namespace" Json.Decode.string)
         (Json.Decode.Extra.optionalField "prefix" Json.Decode.string)
-        (Json.Decode.maybe (Json.Decode.field "name" Json.Decode.bool)
+        (Json.Decode.maybe (Json.Decode.field "attribute" Json.Decode.bool)
             |> Json.Decode.map (Maybe.withDefault False)
         )
-        (Json.Decode.maybe (Json.Decode.field "name" Json.Decode.bool)
+        (Json.Decode.maybe (Json.Decode.field "wrapped" Json.Decode.bool)
             |> Json.Decode.map (Maybe.withDefault False)
         )
+
+
+encodeXml : Xml -> Json.Encode.Value
+encodeXml (Xml xml) =
+    [ Internal.maybeEncodeField ( "name", Json.Encode.string ) xml.name
+    , Internal.maybeEncodeField ( "namespace", Json.Encode.string ) xml.namespace
+    , Internal.maybeEncodeField ( "prefix", Json.Encode.string ) xml.prefix
+    , Just ( "attribute", Json.Encode.bool xml.attribute )
+    , Just ( "wrapped", Json.Encode.bool xml.wrapped )
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 
@@ -530,6 +650,16 @@ decodeRequestBody =
         (Json.Decode.Extra.optionalField "required" Json.Decode.bool
             |> Json.Decode.map (Maybe.withDefault False)
         )
+
+
+encodeRequestBody : RequestBody -> Json.Encode.Value
+encodeRequestBody (RequestBody requestBody) =
+    [ Internal.maybeEncodeField ( "description", Json.Encode.string ) requestBody.description
+    , Internal.maybeEncodeDictField ( "content", identity, encodeMediaType ) requestBody.content
+    , Just ( "required", Json.Encode.bool requestBody.required )
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 
@@ -570,6 +700,17 @@ decodeMediaType =
         )
 
 
+encodeMediaType : MediaType -> Json.Encode.Value
+encodeMediaType (MediaType mediaType) =
+    [ Internal.maybeEncodeField ( "schema", encodeSchema ) mediaType.schema
+    , Internal.maybeEncodeField ( "example", identity ) mediaType.example
+    , Internal.maybeEncodeDictField ( "examples", identity, encodeRefOr encodeExample ) mediaType.examples
+    , Internal.maybeEncodeDictField ( "encoding", identity, encodeEncoding ) mediaType.encoding
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
+
+
 
 -- Example
 
@@ -601,6 +742,17 @@ decodeExample =
         (Json.Decode.Extra.optionalField "description" Json.Decode.string)
         (Json.Decode.Extra.optionalField "value" Json.Decode.value)
         (Json.Decode.Extra.optionalField "externalValue" Json.Decode.string)
+
+
+encodeExample : Example -> Json.Encode.Value
+encodeExample (Example example) =
+    [ Internal.maybeEncodeField ( "summary", Json.Encode.string ) example.summary
+    , Internal.maybeEncodeField ( "description", Json.Encode.string ) example.description
+    , Internal.maybeEncodeField ( "value", identity ) example.value
+    , Internal.maybeEncodeField ( "externalValue", Json.Encode.string ) example.externalValue
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 
@@ -658,6 +810,25 @@ decodePath =
         |> optionalNothing "trace" decodeOperation
         |> Json.Decode.Pipeline.optional "servers" (Json.Decode.list decodeServer) []
         |> Json.Decode.Pipeline.optional "parameters" (Json.Decode.list (decodeRefOr decodeParameter)) []
+
+
+encodePath : Path -> Json.Encode.Value
+encodePath (Path path) =
+    [ Internal.maybeEncodeField ( "summary", Json.Encode.string ) path.summary
+    , Internal.maybeEncodeField ( "description", Json.Encode.string ) path.description
+    , Internal.maybeEncodeField ( "get", encodeOperation ) path.get
+    , Internal.maybeEncodeField ( "put", encodeOperation ) path.put
+    , Internal.maybeEncodeField ( "post", encodeOperation ) path.post
+    , Internal.maybeEncodeField ( "delete", encodeOperation ) path.delete
+    , Internal.maybeEncodeField ( "options", encodeOperation ) path.options
+    , Internal.maybeEncodeField ( "head", encodeOperation ) path.head
+    , Internal.maybeEncodeField ( "patch", encodeOperation ) path.patch
+    , Internal.maybeEncodeField ( "trace", encodeOperation ) path.trace
+    , Internal.maybeEncodeListField ( "servers", encodeServer ) path.servers
+    , Internal.maybeEncodeListField ( "parameters", encodeRefOr encodeParameter ) path.parameters
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 
@@ -724,6 +895,25 @@ decodeOperation =
             )
 
 
+encodeOperation : Operation -> Json.Encode.Value
+encodeOperation (Operation operation) =
+    [ Internal.maybeEncodeListField ( "tags", Json.Encode.string ) operation.tags
+    , Internal.maybeEncodeField ( "summary", Json.Encode.string ) operation.summary
+    , Internal.maybeEncodeField ( "description", Json.Encode.string ) operation.description
+    , Internal.maybeEncodeField ( "externalDocs", encodeExternalDocumentation ) operation.externalDocs
+    , Internal.maybeEncodeField ( "operationId", Json.Encode.string ) operation.operationId
+    , Internal.maybeEncodeListField ( "parameters", encodeRefOr encodeParameter ) operation.parameters
+    , Internal.maybeEncodeField ( "requestBody", encodeRefOr encodeRequestBody ) operation.requestBody
+    , Just ( "responses", Json.Encode.dict identity (encodeRefOr encodeResponse) operation.responses )
+    , Internal.maybeEncodeDictField ( "callbacks", identity, encodeRefOr encodeCallback ) operation.callbacks
+    , Just ( "deprecated", Json.Encode.bool operation.deprecated )
+    , Internal.maybeEncodeListField ( "security", encodeSecurityRequirement ) operation.security
+    , Internal.maybeEncodeListField ( "servers", encodeServer ) operation.servers
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
+
+
 
 -- SecurityRequirement
 
@@ -740,6 +930,11 @@ decodeSecurityRequirement : Decoder SecurityRequirement
 decodeSecurityRequirement =
     Json.Decode.map SecurityRequirement
         (Json.Decode.dict (Json.Decode.list Json.Decode.string))
+
+
+encodeSecurityRequirement : SecurityRequirement -> Json.Encode.Value
+encodeSecurityRequirement (SecurityRequirement securityRequirement) =
+    Json.Encode.dict identity (Json.Encode.list Json.Encode.string) securityRequirement
 
 
 
@@ -772,6 +967,13 @@ decodeCallback =
                     _ ->
                         Json.Decode.fail "Expected a single expression but found zero or multiple"
             )
+
+
+encodeCallback : Callback -> Json.Encode.Value
+encodeCallback (Callback callback) =
+    Json.Encode.object
+        [ ( callback.expression, encodeRefOr encodePath callback.refOrPath )
+        ]
 
 
 
@@ -814,6 +1016,17 @@ decodeResponse =
             (Json.Decode.dict (decodeRefOr decodeLink))
             |> Json.Decode.map (Maybe.withDefault Dict.empty)
         )
+
+
+encodeResponse : Response -> Json.Encode.Value
+encodeResponse (Response response) =
+    [ Just ( "description", Json.Encode.string response.description )
+    , Internal.maybeEncodeDictField ( "headers", identity, encodeRefOr encodeHeader ) response.headers
+    , Internal.maybeEncodeDictField ( "content", identity, encodeMediaType ) response.content
+    , Internal.maybeEncodeDictField ( "links", identity, encodeRefOr encodeLink ) response.links
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 
@@ -864,6 +1077,18 @@ decodeLink =
         (Json.Decode.Extra.optionalField "server" decodeServer)
 
 
+encodeLink : Link -> Json.Encode.Value
+encodeLink (Link link) =
+    [ Internal.maybeEncodeDictField ( "parameters", identity, identity ) link.parameters
+    , Internal.maybeEncodeField ( "requestBody", identity ) link.requestBody
+    , Internal.maybeEncodeField ( "description", Json.Encode.string ) link.description
+    , Internal.maybeEncodeField ( "server", encodeServer ) link.server
+    ]
+        |> List.filterMap identity
+        |> List.append (encodeLinkRefOrId link.operationRefOrId)
+        |> Json.Encode.object
+
+
 decodeLinkRefOrId : Decoder (Maybe LinkRefOrId)
 decodeLinkRefOrId =
     Internal.andThen2
@@ -883,6 +1108,19 @@ decodeLinkRefOrId =
         )
         (Json.Decode.Extra.optionalField "operationRef" Json.Decode.string)
         (Json.Decode.Extra.optionalField "operationId" Json.Decode.string)
+
+
+encodeLinkRefOrId : Maybe LinkRefOrId -> List ( String, Json.Encode.Value )
+encodeLinkRefOrId maybeLinkRefOrId =
+    case maybeLinkRefOrId of
+        Nothing ->
+            []
+
+        Just (LinkRef operationRef) ->
+            [ ( "operationRef", Json.Encode.string operationRef ) ]
+
+        Just (LinkId operationId) ->
+            [ ( "operationId", Json.Encode.string operationId ) ]
 
 
 
@@ -917,6 +1155,16 @@ decodeServer =
         )
 
 
+encodeServer : Server -> Json.Encode.Value
+encodeServer (Server server) =
+    [ Internal.maybeEncodeField ( "description", Json.Encode.string ) server.description
+    , Just ( "url", Json.Encode.string server.url )
+    , Internal.maybeEncodeDictField ( "variables", identity, encodeServerVariable ) server.variables
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
+
+
 
 -- Server Variable
 
@@ -949,6 +1197,16 @@ decodeServerVariable =
         )
 
 
+encodeServerVariable : Variable -> Json.Encode.Value
+encodeServerVariable (Variable variable) =
+    [ Internal.maybeEncodeListField ( "enum", Json.Encode.string ) variable.enum
+    , Just ( "default", Json.Encode.string variable.default )
+    , Internal.maybeEncodeField ( "description", Json.Encode.string ) variable.description
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
+
+
 
 -- External Documentation
 
@@ -974,6 +1232,15 @@ decodeExternalDocumentation =
         )
         (Json.Decode.Extra.optionalField "description" Json.Decode.string)
         (Json.Decode.field "url" Json.Decode.string)
+
+
+encodeExternalDocumentation : ExternalDocumentation -> Json.Encode.Value
+encodeExternalDocumentation (ExternalDocumentation externalDocs) =
+    [ Internal.maybeEncodeField ( "description", Json.Encode.string ) externalDocs.description
+    , Just ( "url", Json.Encode.string externalDocs.url )
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 

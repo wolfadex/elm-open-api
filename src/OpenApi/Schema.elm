@@ -1,6 +1,7 @@
 module OpenApi.Schema exposing
     ( Schema
     , decode
+    , encode
     , get
     )
 
@@ -21,9 +22,10 @@ This is a little unusal compared to the rest of the package but the hope is that
 @docs Schema
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -32,9 +34,10 @@ This is a little unusal compared to the rest of the package but the hope is that
 
 -}
 
-import Json.Decode exposing (Decoder, Value)
+import Json.Decode exposing (Decoder)
+import Json.Encode
 import Json.Schema.Definitions
-import OpenApi.Types exposing (Discriminator, ExternalDocumentation, Schema(..), Xml)
+import OpenApi.Types exposing (Schema(..))
 
 
 {-| -}
@@ -46,6 +49,12 @@ type alias Schema =
 decode : Decoder Schema
 decode =
     OpenApi.Types.decodeSchema
+
+
+{-| -}
+encode : Schema -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeSchema
 
 
 {-| Given the above [Schema](#Schema) returns a [json-tools/json-schema Json.Schema.Definitions.Schema](https://package.elm-lang.org/packages/json-tools/json-schema/latest/Json-Schema-Definitions#Schema)

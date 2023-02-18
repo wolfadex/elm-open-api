@@ -1,7 +1,6 @@
 module Test.OpenApi exposing (suite)
 
-import Expect exposing (Expectation)
-import Fuzz exposing (Fuzzer)
+import Expect
 import Json.Decode
 import OpenApi
 import Semver

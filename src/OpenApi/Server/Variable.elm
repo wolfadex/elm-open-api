@@ -1,6 +1,7 @@
 module OpenApi.Server.Variable exposing
     ( Variable
     , decode
+    , encode
     , default
     , description
     , enum
@@ -14,9 +15,10 @@ module OpenApi.Server.Variable exposing
 @docs Variable
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -28,6 +30,7 @@ module OpenApi.Server.Variable exposing
 -}
 
 import Json.Decode exposing (Decoder)
+import Json.Encode
 import OpenApi.Types exposing (Variable(..))
 
 
@@ -40,6 +43,12 @@ type alias Variable =
 decode : Decoder Variable
 decode =
     OpenApi.Types.decodeServerVariable
+
+
+{-| -}
+encode : Variable -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeServerVariable
 
 
 {-| -}

@@ -2,6 +2,7 @@ module OpenApi.Reference exposing
     ( Reference
     , ReferenceOr
     , decode
+    , encode
     , description
     , ref
     , summary
@@ -16,9 +17,10 @@ module OpenApi.Reference exposing
 @docs ReferenceOr
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -30,7 +32,8 @@ module OpenApi.Reference exposing
 -}
 
 import Json.Decode exposing (Decoder)
-import OpenApi.Types exposing (Reference(..), ReferenceOr(..))
+import Json.Encode
+import OpenApi.Types exposing (Reference(..))
 
 
 {-| -}
@@ -49,6 +52,12 @@ type alias ReferenceOr a =
 decode : Decoder Reference
 decode =
     OpenApi.Types.decodeReference
+
+
+{-| -}
+encode : Reference -> Json.Encode.Value
+encode =
+    OpenApi.Types.encodeReference
 
 
 {-| -}

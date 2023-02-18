@@ -1,6 +1,7 @@
 module OpenApi.Info exposing
     ( Info
     , decode
+    , encode
     , contact
     , description
     , license
@@ -18,9 +19,10 @@ module OpenApi.Info exposing
 @docs Info
 
 
-# Decoding
+# Decoding / Encoding
 
 @docs decode
+@docs encode
 
 
 # Querying
@@ -35,8 +37,10 @@ module OpenApi.Info exposing
 
 -}
 
+import Internal
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
+import Json.Encode
 import OpenApi.Contact exposing (Contact)
 import OpenApi.License exposing (License)
 
@@ -87,6 +91,21 @@ decode =
         (Json.Decode.Extra.optionalField "contact" OpenApi.Contact.decode)
         (Json.Decode.Extra.optionalField "license" OpenApi.License.decode)
         (Json.Decode.field "version" Json.Decode.string)
+
+
+{-| -}
+encode : Info -> Json.Encode.Value
+encode (Info info) =
+    [ Just ( "title", Json.Encode.string info.title )
+    , Internal.maybeEncodeField ( "summary", Json.Encode.string ) info.summary
+    , Internal.maybeEncodeField ( "description", Json.Encode.string ) info.description
+    , Internal.maybeEncodeField ( "termsOfService", Json.Encode.string ) info.termsOfService
+    , Internal.maybeEncodeField ( "contact", OpenApi.Contact.encode ) info.contact
+    , Internal.maybeEncodeField ( "license", OpenApi.License.encode ) info.license
+    , Just ( "version", Json.Encode.string info.version )
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 
