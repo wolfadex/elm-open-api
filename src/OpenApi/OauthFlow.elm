@@ -4,11 +4,11 @@ module OpenApi.OauthFlow exposing
     , PasswordFlow
     , ClientCredentialsFlow
     , AuthorizationCodeFlow
-    , decodeFlows
-    , decodeImplicit
-    , decodePassword
-    , decodeClientCredentials
-    , decodeAuthorizationCode
+    , decodeFlows, encodeFlows
+    , decodeImplicit, encodeImplicit
+    , decodePassword, encodePassword
+    , decodeClientCredentials, encodeClientCredentials
+    , decodeAuthorizationCode, encodeAuthorizationCode
     , implicit
     , password
     , clientCredentials
@@ -40,13 +40,13 @@ module OpenApi.OauthFlow exposing
 @docs AuthorizationCodeFlow
 
 
-# Decoding
+# Decoding / Encoding
 
-@docs decodeFlows
-@docs decodeImplicit
-@docs decodePassword
-@docs decodeClientCredentials
-@docs decodeAuthorizationCode
+@docs decodeFlows, encodeFlows
+@docs decodeImplicit, encodeImplicit
+@docs decodePassword, encodePassword
+@docs decodeClientCredentials, encodeClientCredentials
+@docs decodeAuthorizationCode, encodeAuthorizationCode
 
 
 # Querying
@@ -91,8 +91,10 @@ module OpenApi.OauthFlow exposing
 -}
 
 import Dict exposing (Dict)
+import Internal
 import Json.Decode exposing (Decoder)
 import Json.Decode.Extra
+import Json.Encode
 
 
 
@@ -184,6 +186,18 @@ decodeFlows =
 
 
 {-| -}
+encodeFlows : OauthFlows -> Json.Encode.Value
+encodeFlows (OauthFlows oauthFlows) =
+    [ Internal.maybeEncodeField ( "implicit", encodeImplicit ) oauthFlows.implicit
+    , Internal.maybeEncodeField ( "password", encodePassword ) oauthFlows.password
+    , Internal.maybeEncodeField ( "clientCredentials", encodeClientCredentials ) oauthFlows.clientCredentials
+    , Internal.maybeEncodeField ( "authorizationCode", encodeAuthorizationCode ) oauthFlows.authorizationCode
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
+
+
+{-| -}
 decodeImplicit : Decoder ImplicitFlow
 decodeImplicit =
     Json.Decode.map3
@@ -197,6 +211,17 @@ decodeImplicit =
         (Json.Decode.field "authorizationUrl" Json.Decode.string)
         (Json.Decode.Extra.optionalField "refreshUrl" Json.Decode.string)
         (Json.Decode.field "scopes" decodeScopes)
+
+
+{-| -}
+encodeImplicit : ImplicitFlow -> Json.Encode.Value
+encodeImplicit (ImplicitFlow implicitFlow) =
+    [ Just ( "authorizationUrl", Json.Encode.string implicitFlow.authorizationUrl )
+    , Internal.maybeEncodeField ( "refreshUrl", Json.Encode.string ) implicitFlow.refreshUrl
+    , Just ( "scopes", encodeScopes implicitFlow.scopes )
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 {-| -}
@@ -216,6 +241,17 @@ decodePassword =
 
 
 {-| -}
+encodePassword : PasswordFlow -> Json.Encode.Value
+encodePassword (PasswordFlow passwordFlow) =
+    [ Just ( "tokenUrl", Json.Encode.string passwordFlow.tokenUrl )
+    , Internal.maybeEncodeField ( "refreshUrl", Json.Encode.string ) passwordFlow.refreshUrl
+    , Just ( "scopes", encodeScopes passwordFlow.scopes )
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
+
+
+{-| -}
 decodeClientCredentials : Decoder ClientCredentialsFlow
 decodeClientCredentials =
     Json.Decode.map3
@@ -229,6 +265,17 @@ decodeClientCredentials =
         (Json.Decode.field "tokenUrl" Json.Decode.string)
         (Json.Decode.Extra.optionalField "refreshUrl" Json.Decode.string)
         (Json.Decode.field "scopes" decodeScopes)
+
+
+{-| -}
+encodeClientCredentials : ClientCredentialsFlow -> Json.Encode.Value
+encodeClientCredentials (ClientCredentialsFlow clientCredentialsFlow) =
+    [ Just ( "tokenUrl", Json.Encode.string clientCredentialsFlow.tokenUrl )
+    , Internal.maybeEncodeField ( "refreshUrl", Json.Encode.string ) clientCredentialsFlow.refreshUrl
+    , Just ( "scopes", encodeScopes clientCredentialsFlow.scopes )
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
 
 
 {-| -}
@@ -249,9 +296,26 @@ decodeAuthorizationCode =
         (Json.Decode.field "scopes" decodeScopes)
 
 
+{-| -}
+encodeAuthorizationCode : AuthorizationCodeFlow -> Json.Encode.Value
+encodeAuthorizationCode (AuthorizationCodeFlow authorizationCodeFlow) =
+    [ Just ( "authorizationUrl", Json.Encode.string authorizationCodeFlow.authorizationUrl )
+    , Just ( "tokenUrl", Json.Encode.string authorizationCodeFlow.tokenUrl )
+    , Internal.maybeEncodeField ( "refreshUrl", Json.Encode.string ) authorizationCodeFlow.refreshUrl
+    , Just ( "scopes", encodeScopes authorizationCodeFlow.scopes )
+    ]
+        |> List.filterMap identity
+        |> Json.Encode.object
+
+
 decodeScopes : Decoder (Dict String String)
 decodeScopes =
     Json.Decode.dict Json.Decode.string
+
+
+encodeScopes : Dict String String -> Json.Encode.Value
+encodeScopes =
+    Json.Encode.dict identity Json.Encode.string
 
 
 

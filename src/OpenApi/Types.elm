@@ -971,7 +971,9 @@ decodeCallback =
 
 encodeCallback : Callback -> Json.Encode.Value
 encodeCallback (Callback callback) =
-    Debug.todo "encode callback"
+    Json.Encode.object
+        [ ( callback.expression, encodeRefOr encodePath callback.refOrPath )
+        ]
 
 
 
