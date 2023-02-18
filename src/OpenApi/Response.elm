@@ -36,7 +36,7 @@ import Json.Decode exposing (Decoder)
 import Json.Encode
 import OpenApi.Link exposing (Link)
 import OpenApi.MediaType exposing (MediaType)
-import OpenApi.Types exposing (Header, ReferenceOr(..), Response(..))
+import OpenApi.Types exposing (Header, ReferenceOr, Response(..))
 
 
 {-| -}

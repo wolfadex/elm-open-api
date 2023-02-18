@@ -56,8 +56,8 @@ import OpenApi.Types
         , Link
         , Parameter
         , Path
-        , ReferenceOr(..)
-        , RequestBody(..)
+        , ReferenceOr
+        , RequestBody
         , Response
         , Schema
         )

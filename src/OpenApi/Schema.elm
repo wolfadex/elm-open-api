@@ -37,7 +37,7 @@ This is a little unusal compared to the rest of the package but the hope is that
 import Json.Decode exposing (Decoder)
 import Json.Encode
 import Json.Schema.Definitions
-import OpenApi.Types exposing (Discriminator, ExternalDocumentation, Schema(..), Xml)
+import OpenApi.Types exposing (Schema(..))
 
 
 {-| -}

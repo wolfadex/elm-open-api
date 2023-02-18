@@ -23,12 +23,6 @@ andThen3 f decoderA decoderB decoderC =
         |> Json.Decode.andThen (\( a, b, c ) -> f a b c)
 
 
-type Value a
-    = Present a
-    | Absent
-    | Null
-
-
 maybeEncodeField : ( String, a -> Json.Encode.Value ) -> Maybe a -> Maybe ( String, Json.Encode.Value )
 maybeEncodeField ( name, encoder ) maybeVal =
     case maybeVal of

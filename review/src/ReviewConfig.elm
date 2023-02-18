@@ -17,6 +17,8 @@ import NoExposingEverything
 import NoImportingEverything
 import NoInconsistentAliases
 import NoMissingTypeAnnotation
+import NoMissingTypeAnnotationInLetIn
+import NoPrematureLetComputation
 import NoUnused.CustomTypeConstructors
 import NoUnused.Dependencies
 import NoUnused.Exports
@@ -25,6 +27,7 @@ import NoUnused.Parameters
 import NoUnused.Patterns
 import NoUnused.Variables
 import Review.Rule exposing (Rule)
+import Simplify
 
 
 config : List Rule
@@ -32,19 +35,19 @@ config =
     [ NoUnused.Modules.rule
     , NoUnused.Exports.rule
     , NoUnused.Dependencies.rule
-
-    --, NoUnused.Variables.rule
-    -- , NoUnused.CustomTypeConstructors.rule []
+    , NoUnused.Variables.rule
+    , NoUnused.CustomTypeConstructors.rule []
     , NoUnused.Parameters.rule
-
-    --, NoUnused.Patterns.rule
+    , NoUnused.Patterns.rule
     , NoDebug.Log.rule
     , NoDebug.TodoOrToString.rule
         |> Review.Rule.ignoreErrorsForDirectories [ "tests" ]
     , NoExposingEverything.rule
-
-    --, NoImportingEverything.rule []
+    , NoImportingEverything.rule [ "Test" ]
     , NoMissingTypeAnnotation.rule
+    , NoMissingTypeAnnotationInLetIn.rule
+        |> Review.Rule.ignoreErrorsForDirectories [ "tests" ]
+    , NoPrematureLetComputation.rule
 
     --, NoInconsistentAliases.config
     --    [ ( "Html.Attributes", "Attr" )
@@ -53,4 +56,5 @@ config =
     --    ]
     --    |> NoInconsistentAliases.noMissingAliases
     --    |> NoInconsistentAliases.rule
+    , Simplify.rule Simplify.defaults
     ]

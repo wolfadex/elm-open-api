@@ -33,7 +33,7 @@ module OpenApi.Reference exposing
 
 import Json.Decode exposing (Decoder)
 import Json.Encode
-import OpenApi.Types exposing (Reference(..), ReferenceOr(..))
+import OpenApi.Types exposing (Reference(..))
 
 
 {-| -}
