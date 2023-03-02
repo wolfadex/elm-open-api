@@ -3,7 +3,7 @@
     "name": "wolfadex/elm-open-api",
     "summary": "Elm support for OpenAPI",
     "license": "BSD-3-Clause",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "exposed-modules": [
         "OpenApi",
         "OpenApi.Callback",
