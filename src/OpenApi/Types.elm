@@ -523,7 +523,240 @@ type alias SchemaInternal =
 decodeSchema : Decoder Schema
 decodeSchema =
     Json.Decode.map Schema
-        Json.Schema.Definitions.decoder
+        decodeSchemaInternal
+
+
+decodeSchemaInternal : Decoder SchemaInternal
+decodeSchemaInternal =
+    let
+        singleType : Decoder Json.Schema.Definitions.SingleType
+        singleType =
+            Json.Decode.string
+                |> Json.Decode.andThen singleTypeDecoder
+
+        multipleTypes : Decoder Json.Schema.Definitions.Type
+        multipleTypes =
+            Json.Decode.string
+                |> Json.Decode.list
+                |> Json.Decode.andThen multipleTypesDecoder
+
+        booleanSchemaDecoder : Decoder Json.Schema.Definitions.Schema
+        booleanSchemaDecoder =
+            Json.Decode.bool
+                |> Json.Decode.andThen
+                    (\b ->
+                        if b then
+                            Json.Decode.succeed (Json.Schema.Definitions.BooleanSchema True)
+
+                        else
+                            Json.Decode.succeed (Json.Schema.Definitions.BooleanSchema False)
+                    )
+
+        exclusiveBoundaryDecoder : Decoder Json.Schema.Definitions.ExclusiveBoundary
+        exclusiveBoundaryDecoder =
+            Json.Decode.oneOf
+                [ Json.Decode.bool |> Json.Decode.map Json.Schema.Definitions.BoolBoundary
+                , Json.Decode.float |> Json.Decode.map Json.Schema.Definitions.NumberBoundary
+                ]
+
+        objectSchemaDecoder : Decoder Json.Schema.Definitions.SubSchema
+        objectSchemaDecoder =
+            Json.Decode.succeed Json.Schema.Definitions.SubSchema
+                |> Json.Decode.Pipeline.custom
+                    ((Json.Decode.maybe <| Json.Decode.field "nullable" Json.Decode.bool)
+                        |> Json.Decode.andThen
+                            (\nullable ->
+                                Json.Decode.field "type"
+                                    (Json.Decode.oneOf
+                                        [ multipleTypes
+                                        , Json.Decode.map
+                                            (if nullable == Just True then
+                                                Json.Schema.Definitions.NullableType
+
+                                             else
+                                                Json.Schema.Definitions.SingleType
+                                            )
+                                            singleType
+                                        ]
+                                    )
+                                    |> Json.Decode.maybe
+                                    |> Json.Decode.map (Maybe.withDefault Json.Schema.Definitions.AnyType)
+                            )
+                    )
+                |> Json.Decode.Pipeline.custom
+                    (Json.Decode.map2
+                        (\a b ->
+                            if a == Nothing then
+                                b
+
+                            else
+                                a
+                        )
+                        (Json.Decode.field "$id" Json.Decode.string |> Json.Decode.maybe)
+                        (Json.Decode.field "id" Json.Decode.string |> Json.Decode.maybe)
+                    )
+                |> Json.Decode.Pipeline.optional "$ref" (Json.Decode.nullable Json.Decode.string) Nothing
+                -- meta
+                |> Json.Decode.Pipeline.optional "title" (Json.Decode.nullable Json.Decode.string) Nothing
+                |> Json.Decode.Pipeline.optional "description" (Json.Decode.nullable Json.Decode.string) Nothing
+                |> Json.Decode.Pipeline.optional "default" (Json.Decode.value |> Json.Decode.map Just) Nothing
+                |> Json.Decode.Pipeline.optional "examples" (Json.Decode.nullable <| Json.Decode.list Json.Decode.value) Nothing
+                |> Json.Decode.Pipeline.optional "definitions" (Json.Decode.nullable <| Json.Decode.lazy <| \_ -> schemataDecoder) Nothing
+                -- number
+                |> Json.Decode.Pipeline.optional "multipleOf" (Json.Decode.nullable Json.Decode.float) Nothing
+                |> Json.Decode.Pipeline.optional "maximum" (Json.Decode.nullable Json.Decode.float) Nothing
+                |> Json.Decode.Pipeline.optional "exclusiveMaximum" (Json.Decode.nullable exclusiveBoundaryDecoder) Nothing
+                |> Json.Decode.Pipeline.optional "minimum" (Json.Decode.nullable Json.Decode.float) Nothing
+                |> Json.Decode.Pipeline.optional "exclusiveMinimum" (Json.Decode.nullable exclusiveBoundaryDecoder) Nothing
+                -- string
+                |> Json.Decode.Pipeline.optional "maxLength" (Json.Decode.nullable nonNegativeInt) Nothing
+                |> Json.Decode.Pipeline.optional "minLength" (Json.Decode.nullable nonNegativeInt) Nothing
+                |> Json.Decode.Pipeline.optional "pattern" (Json.Decode.nullable Json.Decode.string) Nothing
+                |> Json.Decode.Pipeline.optional "format" (Json.Decode.nullable Json.Decode.string) Nothing
+                -- array
+                |> Json.Decode.Pipeline.optional "items" (Json.Decode.lazy (\_ -> itemsDecoder)) Json.Schema.Definitions.NoItems
+                |> Json.Decode.Pipeline.optional "additionalItems" (Json.Decode.nullable <| Json.Decode.lazy (\_ -> decodeSchemaInternal)) Nothing
+                |> Json.Decode.Pipeline.optional "maxItems" (Json.Decode.nullable nonNegativeInt) Nothing
+                |> Json.Decode.Pipeline.optional "minItems" (Json.Decode.nullable nonNegativeInt) Nothing
+                |> Json.Decode.Pipeline.optional "uniqueItems" (Json.Decode.nullable Json.Decode.bool) Nothing
+                |> Json.Decode.Pipeline.optional "contains" (Json.Decode.nullable <| Json.Decode.lazy (\_ -> decodeSchemaInternal)) Nothing
+                |> Json.Decode.Pipeline.optional "maxProperties" (Json.Decode.nullable nonNegativeInt) Nothing
+                |> Json.Decode.Pipeline.optional "minProperties" (Json.Decode.nullable nonNegativeInt) Nothing
+                |> Json.Decode.Pipeline.optional "required" (Json.Decode.nullable (Json.Decode.list Json.Decode.string)) Nothing
+                |> Json.Decode.Pipeline.optional "properties" (Json.Decode.nullable (Json.Decode.lazy (\_ -> schemataDecoder))) Nothing
+                |> Json.Decode.Pipeline.optional "patternProperties" (Json.Decode.nullable (Json.Decode.lazy (\_ -> schemataDecoder))) Nothing
+                |> Json.Decode.Pipeline.optional "additionalProperties" (Json.Decode.nullable <| Json.Decode.lazy (\_ -> decodeSchemaInternal)) Nothing
+                |> Json.Decode.Pipeline.optional "dependencies" (Json.Decode.lazy (\_ -> dependenciesDecoder)) []
+                |> Json.Decode.Pipeline.optional "propertyNames" (Json.Decode.nullable <| Json.Decode.lazy (\_ -> decodeSchemaInternal)) Nothing
+                |> Json.Decode.Pipeline.optional "enum" (Json.Decode.nullable nonEmptyUniqueArrayOfValuesDecoder) Nothing
+                |> Json.Decode.Pipeline.optional "const" (Json.Decode.value |> Json.Decode.map Just) Nothing
+                |> Json.Decode.Pipeline.optional "allOf" (Json.Decode.nullable (Json.Decode.lazy (\_ -> nonEmptyListOfSchemas))) Nothing
+                |> Json.Decode.Pipeline.optional "anyOf" (Json.Decode.nullable (Json.Decode.lazy (\_ -> nonEmptyListOfSchemas))) Nothing
+                |> Json.Decode.Pipeline.optional "oneOf" (Json.Decode.nullable (Json.Decode.lazy (\_ -> nonEmptyListOfSchemas))) Nothing
+                |> Json.Decode.Pipeline.optional "not" (Json.Decode.nullable <| Json.Decode.lazy (\_ -> decodeSchemaInternal)) Nothing
+                |> Json.Decode.Pipeline.requiredAt [] Json.Decode.value
+    in
+    Json.Decode.oneOf
+        [ booleanSchemaDecoder
+        , objectSchemaDecoder
+            |> Json.Decode.andThen
+                (\b ->
+                    Json.Decode.succeed (Json.Schema.Definitions.ObjectSchema b)
+                )
+        ]
+
+
+schemataDecoder : Decoder Json.Schema.Definitions.Schemata
+schemataDecoder =
+    Json.Decode.keyValuePairs (Json.Decode.lazy (\_ -> decodeSchemaInternal))
+        |> Json.Decode.map Json.Schema.Definitions.Schemata
+
+
+singleTypeDecoder : String -> Decoder Json.Schema.Definitions.SingleType
+singleTypeDecoder s =
+    case Json.Schema.Definitions.stringToType s of
+        Ok st ->
+            Json.Decode.succeed st
+
+        Err msg ->
+            Json.Decode.fail msg
+
+
+multipleTypesDecoder : List String -> Decoder Json.Schema.Definitions.Type
+multipleTypesDecoder lst =
+    case lst of
+        [ x, "null" ] ->
+            Json.Decode.map Json.Schema.Definitions.NullableType <| singleTypeDecoder x
+
+        [ "null", x ] ->
+            Json.Decode.map Json.Schema.Definitions.NullableType <| singleTypeDecoder x
+
+        [ x ] ->
+            Json.Decode.map Json.Schema.Definitions.SingleType <| singleTypeDecoder x
+
+        otherList ->
+            otherList
+                |> List.sort
+                |> List.map Json.Schema.Definitions.stringToType
+                |> foldResults
+                |> Result.andThen (Ok << Json.Schema.Definitions.UnionType)
+                |> resultToDecoder
+
+
+nonEmptyListOfSchemas : Decoder (List SchemaInternal)
+nonEmptyListOfSchemas =
+    Json.Decode.list (Json.Decode.lazy (\_ -> decodeSchemaInternal))
+        |> Json.Decode.andThen failIfEmpty
+
+
+nonEmptyUniqueArrayOfValuesDecoder : Decoder (List Value)
+nonEmptyUniqueArrayOfValuesDecoder =
+    Json.Decode.list Json.Decode.value
+        |> Json.Decode.andThen failIfValuesAreNotUnique
+        |> Json.Decode.andThen failIfEmpty
+
+
+failIfValuesAreNotUnique : List Value -> Decoder (List Value)
+failIfValuesAreNotUnique l =
+    Json.Decode.succeed l
+
+
+failIfEmpty : List a -> Decoder (List a)
+failIfEmpty l =
+    if List.isEmpty l then
+        Json.Decode.fail "List is empty"
+
+    else
+        Json.Decode.succeed l
+
+
+foldResults : List (Result x y) -> Result x (List y)
+foldResults results =
+    results
+        |> List.foldl
+            (\t -> Result.andThen (\r -> t |> Result.map (\a -> a :: r)))
+            (Ok [])
+        |> Result.map List.reverse
+
+
+resultToDecoder : Result String a -> Decoder a
+resultToDecoder res =
+    case res of
+        Ok a ->
+            Json.Decode.succeed a
+
+        Err e ->
+            Json.Decode.fail e
+
+
+itemsDecoder : Decoder Json.Schema.Definitions.Items
+itemsDecoder =
+    Json.Decode.oneOf
+        [ Json.Decode.map Json.Schema.Definitions.ArrayOfItems <| Json.Decode.list decodeSchemaInternal
+        , Json.Decode.map Json.Schema.Definitions.ItemDefinition decodeSchemaInternal
+        ]
+
+
+dependenciesDecoder : Decoder (List ( String, Json.Schema.Definitions.Dependency ))
+dependenciesDecoder =
+    Json.Decode.oneOf
+        [ Json.Decode.map Json.Schema.Definitions.ArrayPropNames (Json.Decode.list Json.Decode.string)
+        , Json.Decode.map Json.Schema.Definitions.PropSchema decodeSchemaInternal
+        ]
+        |> Json.Decode.keyValuePairs
+
+
+nonNegativeInt : Decoder Int
+nonNegativeInt =
+    Json.Decode.int
+        |> Json.Decode.andThen
+            (\x ->
+                if x >= 0 then
+                    Json.Decode.succeed x
+
+                else
+                    Json.Decode.fail "Expected non-negative int"
+            )
 
 
 encodeSchema : Schema -> Json.Encode.Value
