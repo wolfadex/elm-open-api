@@ -13,7 +13,7 @@ also the related CLI tool [elm-open-api](https://github.com/wolfadex/elm-open-ap
 @wolfadex, which uses this package to generate Elm SDKS.
 
 If this is a bug with the Elm package, you're in the right place! If this is a bug with the
-CLI tool, please [report that issue here]().
+CLI tool, please report that issue here https://github.com/wolfadex/elm-open-api-cli/issues/new/choose
 
 **Describe the bug**
 A clear and concise description of what the bug is.
