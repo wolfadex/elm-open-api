@@ -10,6 +10,7 @@ module OpenApi exposing
     , servers
     , tags
     , version
+    , security
     )
 
 {-| Corresponds to the [OpenAPI Object](https://spec.openapis.org/oas/latest#openapi-object) in the OpenAPI specification.
@@ -36,6 +37,7 @@ module OpenApi exposing
 @docs servers
 @docs tags
 @docs version
+@docs security
 
 -}
 
@@ -191,3 +193,9 @@ components (OpenApi openApi) =
 paths : OpenApi -> Dict String Path
 paths (OpenApi openApi) =
     openApi.paths
+
+
+{-| -}
+security : OpenApi -> List SecurityRequirement
+security (OpenApi openApi) =
+    openApi.security
