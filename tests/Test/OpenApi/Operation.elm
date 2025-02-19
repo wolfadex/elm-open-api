@@ -71,6 +71,11 @@ suite =
                 decodedOperation
                     |> Result.map (OpenApi.Operation.security >> Maybe.map List.length)
                     |> Expect.equal (Ok (Just 1))
+        , test "security = []" <|
+            \() ->
+                Json.Decode.decodeString OpenApi.Operation.decode securityIsEmptyArrayExample
+                    |> Result.map OpenApi.Operation.security
+                    |> Expect.equal (Ok (Just []))
         , describe "when 'security' is unspecified" <|
             [ test "it decodes to Nothing" <|
                 \() ->
@@ -160,6 +165,21 @@ example =
       ]
     }
   ]
+}"""
+
+
+securityIsEmptyArrayExample : String
+securityIsEmptyArrayExample =
+    """{
+  "summary": "Updates a pet in the store with form data",
+  "operationId": "updatePetWithForm",
+  "security": [],
+  "responses": {
+    "200": {
+      "description": "Pet updated.",
+      "content": {}
+    }
+  }
 }"""
 
 
