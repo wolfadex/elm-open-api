@@ -135,8 +135,12 @@ deprecated (Operation operation_) =
     operation_.deprecated
 
 
-{-| -}
-security : Operation -> List SecurityRequirement
+{-| SecurityRequirements the operation specifies (possibly an empty list), or Nothing if the operation does not specify any.
+
+If an operation specifies `security`, the given value (even if it's an empty array) overrides the schema's top-level `security`. This is documented in the OpenAPI specification here: <https://swagger.io/specification/v3/#operation-object>.
+
+-}
+security : Operation -> Maybe (List SecurityRequirement)
 security (Operation operation_) =
     operation_.security
 

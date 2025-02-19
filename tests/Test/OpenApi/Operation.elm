@@ -3,6 +3,7 @@ module Test.OpenApi.Operation exposing (suite)
 import Dict
 import Expect
 import Json.Decode
+import Json.Encode
 import OpenApi.Operation
 import Test exposing (..)
 
@@ -68,8 +69,22 @@ suite =
         , test "security" <|
             \() ->
                 decodedOperation
-                    |> Result.map (OpenApi.Operation.security >> List.length)
-                    |> Expect.equal (Ok 1)
+                    |> Result.map (OpenApi.Operation.security >> Maybe.map List.length)
+                    |> Expect.equal (Ok (Just 1))
+        , describe "when 'security' is unspecified" <|
+            [ test "it decodes to Nothing" <|
+                \() ->
+                    Json.Decode.decodeString OpenApi.Operation.decode securityUnspecifiedExample
+                        |> Result.map OpenApi.Operation.security
+                        |> Expect.equal (Ok Nothing)
+            , test "it is not encoded" <|
+                \() ->
+                    Json.Decode.decodeString OpenApi.Operation.decode securityUnspecifiedExample
+                        |> Result.map (OpenApi.Operation.encode >> Json.Encode.encode 0)
+                        |> Result.andThen (Json.Decode.decodeString OpenApi.Operation.decode)
+                        |> Result.map OpenApi.Operation.security
+                        |> Expect.equal (Ok Nothing)
+            ]
         , test "servers" <|
             \() ->
                 decodedOperation
@@ -145,6 +160,20 @@ example =
       ]
     }
   ]
+}"""
+
+
+securityUnspecifiedExample : String
+securityUnspecifiedExample =
+    """{
+  "summary": "Updates a pet in the store with form data",
+  "operationId": "updatePetWithForm",
+  "responses": {
+    "200": {
+      "description": "Pet updated.",
+      "content": {}
+    }
+  }
 }"""
 
 
