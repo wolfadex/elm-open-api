@@ -1083,7 +1083,7 @@ type alias OperationInternal =
     , responses : Dict String (ReferenceOr Response)
     , callbacks : Dict String (ReferenceOr Callback)
     , deprecated : Bool
-    , security : List SecurityRequirement
+    , security : Maybe (List SecurityRequirement)
     , servers : List Server
     }
 
@@ -1116,7 +1116,7 @@ decodeOperation =
         |> decodeOptionalDict "responses" (decodeRefOr decodeResponse)
         |> Json.Decode.Pipeline.optional "callbacks" (Json.Decode.dict (decodeRefOr decodeCallback)) Dict.empty
         |> Json.Decode.Pipeline.optional "deprecated" Json.Decode.bool False
-        |> Json.Decode.Pipeline.optional "security" (Json.Decode.list decodeSecurityRequirement) []
+        |> optionalNothing "security" (Json.Decode.list decodeSecurityRequirement)
         |> Json.Decode.Pipeline.optional "servers" (Json.Decode.list decodeServer) []
         |> Json.Decode.andThen
             (\operation ->
@@ -1140,7 +1140,8 @@ encodeOperation (Operation operation) =
     , Just ( "responses", Json.Encode.dict identity (encodeRefOr encodeResponse) operation.responses )
     , Internal.maybeEncodeDictField ( "callbacks", identity, encodeRefOr encodeCallback ) operation.callbacks
     , Just ( "deprecated", Json.Encode.bool operation.deprecated )
-    , Internal.maybeEncodeListField ( "security", encodeSecurityRequirement ) operation.security
+    , operation.security
+        |> Maybe.map (\security -> ( "security", Json.Encode.list encodeSecurityRequirement security ))
     , Internal.maybeEncodeListField ( "servers", encodeServer ) operation.servers
     ]
         |> List.filterMap identity
