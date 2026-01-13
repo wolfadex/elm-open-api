@@ -91,6 +91,7 @@ import Json.Decode.Extra
 import Json.Decode.Pipeline
 import Json.Encode exposing (Value)
 import Json.Schema.Definitions
+import Result.Extra
 
 
 
@@ -543,14 +544,7 @@ decodeSchemaInternal =
         booleanSchemaDecoder : Decoder Json.Schema.Definitions.Schema
         booleanSchemaDecoder =
             Json.Decode.bool
-                |> Json.Decode.andThen
-                    (\b ->
-                        if b then
-                            Json.Decode.succeed (Json.Schema.Definitions.BooleanSchema True)
-
-                        else
-                            Json.Decode.succeed (Json.Schema.Definitions.BooleanSchema False)
-                    )
+                |> Json.Decode.map Json.Schema.Definitions.BooleanSchema
 
         exclusiveBoundaryDecoder : Decoder Json.Schema.Definitions.ExclusiveBoundary
         exclusiveBoundaryDecoder =
@@ -639,10 +633,7 @@ decodeSchemaInternal =
     Json.Decode.oneOf
         [ booleanSchemaDecoder
         , objectSchemaDecoder
-            |> Json.Decode.andThen
-                (\b ->
-                    Json.Decode.succeed (Json.Schema.Definitions.ObjectSchema b)
-                )
+            |> Json.Decode.map Json.Schema.Definitions.ObjectSchema
         ]
 
 
@@ -677,9 +668,8 @@ multipleTypesDecoder lst =
         otherList ->
             otherList
                 |> List.sort
-                |> List.map Json.Schema.Definitions.stringToType
-                |> foldResults
-                |> Result.andThen (Ok << Json.Schema.Definitions.UnionType)
+                |> Result.Extra.combineMap Json.Schema.Definitions.stringToType
+                |> Result.map Json.Schema.Definitions.UnionType
                 |> resultToDecoder
 
 
@@ -708,15 +698,6 @@ failIfEmpty l =
 
     else
         Json.Decode.succeed l
-
-
-foldResults : List (Result x y) -> Result x (List y)
-foldResults results =
-    results
-        |> List.foldl
-            (\t -> Result.andThen (\r -> t |> Result.map (\a -> a :: r)))
-            (Ok [])
-        |> Result.map List.reverse
 
 
 resultToDecoder : Result String a -> Decoder a
